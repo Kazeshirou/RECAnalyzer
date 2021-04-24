@@ -4,21 +4,23 @@ SRC_DIR = src
 THIRDPARTY_DIR = thirdparty
 
 CC = g++
-CFLAGS = -std=gnu++17 -Wall -Werror -pedantic
+CFLAGS = -std=gnu++17 -Wall -Werror -Wextra -pedantic
 LDFLAGS = -lpthread
 
 SRC = 
 INCLUDES = 
 DIRS = 
+DEFS = 
 PROG = 
 
 ifeq ($(MAKECMDGOALS), $(filter $(MAKECMDGOALS), tests unit_tests))
 	SRC += $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(SRC_DIR)/unix/*')
 	INCLUDES += $(shell find $(SRC_DIR) -name '*.hpp'  -not -path '$(SRC_DIR)/unix/*')
-	DIRS =+ $(shell find $(SRC_DIR)/ -type d -not -path '$(SRC_DIR)/unix')
+	DIRS += $(shell find $(SRC_DIR)/ -type d -not -path '$(SRC_DIR)/unix')
 
 	PROG = $(BUILD_DIR)/test_$(PROGRAMM)
 	LDFLAGS += -lgtest
+	DEFS += TESTS
 else 
 	SRC += $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(SRC_DIR)/tests/*')
 	INCLUDES += $(shell find $(SRC_DIR) -name '*.hpp' -not -path '$(SRC_DIR)/tests/*')
@@ -32,9 +34,11 @@ DIRS += $(THIRDPARTY_DIR)/
 
 OBJS = $(patsubst $(SRC_DIR)/%, $(BUILD_DIR)/%, $(patsubst %.cpp,%.o,$(SRC)))
 DIRFLAGS = $(addprefix -I,$(DIRS))
+DEFFLAGS = $(addprefix -D,$(DEFS))
 
 ifeq ($(DEBUG),on)
 CFLAGS += -g
+DEFS += DEBUG
 endif
 
 ifeq ($(OPT),off)
@@ -62,9 +66,9 @@ $(PROG): $(OBJS)
 
 $(BUILD_DIR)/$(THIRDPARTY_DIR)/%.o: $(THIRDPARTY_DIR)/%.cpp $(INCLUDES)
 	@mkdir -p $(dir $@)
-	$(CC) -c $(CFLAGS) $(DIRFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(DIRFLAGS) $(DEFFLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDES)
 	@mkdir -p $(dir $@)
-	$(CC) -c $(CFLAGS) $(DIRFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(DIRFLAGS) $(DEFFLAGS)  -o $@ $<
 
