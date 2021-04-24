@@ -56,10 +56,10 @@ unix: $(PROG)
 
 .PHONY: tests
 tests: unit_tests
+	$(PROG)
 
 .PHONY: unit_tests
 unit_tests: $(PROG)
-	$(PROG)
 
 $(PROG): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)

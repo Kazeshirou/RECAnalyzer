@@ -20,7 +20,7 @@
             "args": [
                 "unix",
                 "DEBUG=on",
-                "OPTIMIZATION=off"
+                "OPT=off"
             ],
             "presentation": {
                 "clear": true
@@ -40,7 +40,7 @@
             "args": [
                 "unit_tests",
                 "DEBUG=on",
-                "OPTIMIZATION=off"
+                "OPT=off"
             ],
             "presentation": {
                 "clear": true
