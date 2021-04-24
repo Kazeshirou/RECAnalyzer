@@ -2,5 +2,6 @@ rpz/
 books/
 corpus/
 bin/
+src_old
 transactions
 *.pro.user

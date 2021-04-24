@@ -1,0 +1,58 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "clean",
+            "command": "make",
+            "args": [
+                "clean"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "build unix O0 debug",
+            "command": "make",
+            "args": [
+                "unix",
+                "DEBUG=on",
+                "OPTIMIZATION=off"
+            ],
+            "presentation": {
+                "clear": true
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "build tests O0 debug",
+            "command": "make",
+            "args": [
+                "unit_tests",
+                "DEBUG=on",
+                "OPTIMIZATION=off"
+            ],
+            "presentation": {
+                "clear": true
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ],
+    "version": "2.0.0"
+}
