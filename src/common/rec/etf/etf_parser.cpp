@@ -127,11 +127,7 @@ bool Parser::parse_tiers(const ::pugi::xml_node& annotation, etf_t& etf) {
         }
 
         attr = it->attribute("PARENT_REF");
-        if (!attr) {
-            Logger::debug(
-                "rec::etf::Parser",
-                fmt::format("Can't parse PARENT_REF attribute of {}", tier.id));
-        } else {
+        if (attr) {
             tier.parent_ref = attr.as_string();
         }
 

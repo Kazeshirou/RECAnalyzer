@@ -30,13 +30,15 @@ TEST(rec_template_tests, rec_template_from_etf) {
     ASSERT_TRUE(tier != rec_template.tiers_map.end());
     ASSERT_EQ(rec_template.tiers[tier->second].name, "tid2");
     ASSERT_FALSE(rec_template.tiers[tier->second].parent.has_value());
-    ASSERT_EQ(rec_template.tiers[tier->second].constraint, CONSTRAINT::NONE);
+    ASSERT_EQ(rec_template.tiers[tier->second].constraint,
+              CONSTRAINT::INCLUDED_IN);
 
     tier = rec_template.tiers_map.find("tid3");
     ASSERT_TRUE(tier != rec_template.tiers_map.end());
     ASSERT_EQ(rec_template.tiers[tier->second].name, "tid3");
     ASSERT_FALSE(rec_template.tiers[tier->second].parent.has_value());
-    ASSERT_EQ(rec_template.tiers[tier->second].constraint, CONSTRAINT::NONE);
+    ASSERT_EQ(rec_template.tiers[tier->second].constraint,
+              CONSTRAINT::SYMBOLIC_SUBDIVISION);
 
     auto annotation = rec_template.annotations_map.find("tid1_cv1_0");
     ASSERT_TRUE(annotation != rec_template.annotations_map.end());

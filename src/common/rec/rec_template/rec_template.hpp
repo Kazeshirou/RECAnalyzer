@@ -39,6 +39,8 @@ struct rec_template_t {
     rec_template_t& operator=(rec_template_t&&) = default;
     ~rec_template_t()                           = default;
 
+    bool operator==(const rec_template_t& ohter) const;
+
     std::string               author;
     std::string               date;
     std::string               format;

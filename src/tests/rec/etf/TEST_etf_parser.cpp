@@ -48,23 +48,23 @@ TEST(rec_etf_parser_tests, parser_header) {
     ASSERT_EQ(ling_type->second.id, "lt2");
     ASSERT_EQ(ling_type->second.vocabulary_ref, "cv2");
     ASSERT_EQ(ling_type->second.constraint_refs.size(), 1);
-    ASSERT_EQ(ling_type->second.constraint_refs[0], "constr2");
+    ASSERT_EQ(ling_type->second.constraint_refs[0], "Included_In");
 
     ling_type = etf.linguistic_types.find("lt3");
     ASSERT_TRUE(ling_type != etf.linguistic_types.end());
     ASSERT_EQ(ling_type->second.id, "lt3");
     ASSERT_EQ(ling_type->second.constraint_refs.size(), 1);
-    ASSERT_EQ(ling_type->second.constraint_refs[0], "constr1");
+    ASSERT_EQ(ling_type->second.constraint_refs[0], "Symbolic_Subdivision");
 
 
-    auto constr = etf.constraints.find("constr1");
+    auto constr = etf.constraints.find("Symbolic_Subdivision");
     ASSERT_TRUE(constr != etf.constraints.end());
-    ASSERT_EQ(constr->second.id, "constr1");
+    ASSERT_EQ(constr->second.id, "Symbolic_Subdivision");
     ASSERT_EQ(constr->second.description, "constr1 description");
 
-    constr = etf.constraints.find("constr2");
+    constr = etf.constraints.find("Included_In");
     ASSERT_TRUE(constr != etf.constraints.end());
-    ASSERT_EQ(constr->second.id, "constr2");
+    ASSERT_EQ(constr->second.id, "Included_In");
     ASSERT_EQ(constr->second.description, "constr2 description");
 
 

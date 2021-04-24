@@ -93,4 +93,77 @@ rec_template_t& rec_template_t::operator=(const etf::etf_t& etf) {
     return *this;
 }
 
+bool rec_template_t::operator==(const rec_template_t& other) const {
+    if (author != other.author) {
+        return false;
+    }
+    if (date != other.date) {
+        return false;
+    }
+    if (format != other.format) {
+        return false;
+    }
+    if (version != other.version) {
+        return false;
+    }
+    if (time_units != other.time_units) {
+        return false;
+    }
+    if (tiers.size() != other.tiers.size()) {
+        return false;
+    }
+    if (annotations.size() != other.annotations.size()) {
+        return false;
+    }
+    if (tiers_map.size() != other.tiers_map.size()) {
+        return false;
+    }
+    if (annotations_map.size() != other.annotations_map.size()) {
+        return false;
+    }
+    for (size_t i = 0; i < tiers.size(); i++) {
+        if (tiers[i].name != other.tiers[i].name) {
+            return false;
+        }
+        if (tiers[i].constraint != other.tiers[i].constraint) {
+            return false;
+        }
+        if (tiers[i].parent != other.tiers[i].parent) {
+            return false;
+        }
+    }
+
+    for (size_t i = 0; i < annotations.size(); i++) {
+        if (annotations[i].value != other.annotations[i].value) {
+            return false;
+        }
+        if (annotations[i].description != other.annotations[i].description) {
+            return false;
+        }
+        if (annotations[i].tier != other.annotations[i].tier) {
+            return false;
+        }
+    }
+
+    for (const auto& [first, second] : tiers_map) {
+        auto it = other.tiers_map.find(first);
+        if (it == other.tiers_map.end()) {
+            return false;
+        }
+        if (second != it->second)
+            return false;
+    }
+
+    for (const auto& [first, second] : annotations_map) {
+        auto it = other.annotations_map.find(first);
+        if (it == other.annotations_map.end()) {
+            return false;
+        }
+        if (second != it->second)
+            return false;
+    }
+    return true;
+}
+
+
 }  // namespace rec
