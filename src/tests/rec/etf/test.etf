@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ANNOTATION_DOCUMENT AUTHOR="author1" DATE="2021-01-30T11:15:11+03:00" FORMAT="3.0" VERSION="3.0">
+    <HEADER MEDIA_FILE="media_file" TIME_UNITS="time_units"/>
+    <TIME_ORDER/>
+    <TIER LINGUISTIC_TYPE_REF="lt1" PARENT_REF="tid3" TIER_ID="tid1"/>
+    <TIER LINGUISTIC_TYPE_REF="lt2" TIER_ID="tid2"/>
+    <TIER LINGUISTIC_TYPE_REF="lt3" TIER_ID="tid3"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="constr1" LINGUISTIC_TYPE_ID="lt3"/>
+    <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="cv1" LINGUISTIC_TYPE_ID="lt1"/>
+    <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="cv2" LINGUISTIC_TYPE_ID="lt2"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="constr2" LINGUISTIC_TYPE_ID="lt2"/>
+    <CONSTRAINT DESCRIPTION="constr1 description" STEREOTYPE="constr1"/>
+    <CONSTRAINT DESCRIPTION="constr2 description" STEREOTYPE="constr2"/>
+    <CONTROLLED_VOCABULARY CV_ID="cv1">
+        <DESCRIPTION >cv1 description</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid0">
+            <CVE_VALUE DESCRIPTION="cv1_0 description">cv1_0</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid1">
+            <CVE_VALUE DESCRIPTION="cv1_1 description">cv1_1</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid2">
+            <CVE_VALUE DESCRIPTION="cv1_2 description">cv1_2</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+    <CONTROLLED_VOCABULARY CV_ID="cv2">
+        <DESCRIPTION >cv2 description</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid0">
+            <CVE_VALUE DESCRIPTION="cv2_0 description">cv2_0</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid1">
+            <CVE_VALUE DESCRIPTION="cv2_1 description">cv2_1</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid2">
+            <CVE_VALUE DESCRIPTION="cv2_2 description">cv2_2</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+</ANNOTATION_DOCUMENT>

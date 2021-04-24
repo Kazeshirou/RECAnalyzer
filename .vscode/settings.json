@@ -3,6 +3,7 @@
         "istream": "cpp",
         "iosfwd": "cpp",
         "optional": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "iostream": "cpp"
     }
 }

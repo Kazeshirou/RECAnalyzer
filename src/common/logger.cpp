@@ -3,7 +3,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace log {
+namespace my_log {
 
 void Logger::debug(const std::string& system, const std::string& msg) {
     inner_log(time(), "DEBUG", system, msg);
@@ -33,4 +33,4 @@ size_t Logger::time() {
     return ms.count();
 }
 
-}  // namespace log
+}  // namespace my_log

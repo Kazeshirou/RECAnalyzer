@@ -10,7 +10,7 @@ LDFLAGS = -lpthread
 SRC = 
 INCLUDES = 
 DIRS = 
-DEFS = 
+DEFS = FMT_HEADER_ONLY
 PROG = 
 
 ifeq ($(MAKECMDGOALS), $(filter $(MAKECMDGOALS), tests unit_tests))

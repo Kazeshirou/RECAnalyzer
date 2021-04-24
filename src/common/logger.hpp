@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace log {
+namespace my_log {
 
 class Logger {
 public:
@@ -17,4 +17,4 @@ protected:
     static size_t time();
 };
 
-}  // namespace log
+}  // namespace my_log
