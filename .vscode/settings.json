@@ -4,6 +4,17 @@
         "iosfwd": "cpp",
         "optional": "cpp",
         "iomanip": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "array": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "variant": "cpp"
     }
 }
