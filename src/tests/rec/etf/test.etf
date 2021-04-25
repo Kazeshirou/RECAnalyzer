@@ -26,7 +26,7 @@
     <CONTROLLED_VOCABULARY CV_ID="cv2">
         <DESCRIPTION >cv2 description</DESCRIPTION>
         <CV_ENTRY_ML CVE_ID="cveid0">
-            <CVE_VALUE DESCRIPTION="cv2_0 description">cv2_0</CVE_VALUE>
+            <CVE_VALUE DESCRIPTION="cv2_0 description">cv1_0</CVE_VALUE>
         </CV_ENTRY_ML>
         <CV_ENTRY_ML CVE_ID="cveid1">
             <CVE_VALUE DESCRIPTION="cv2_1 description">cv2_1</CVE_VALUE>

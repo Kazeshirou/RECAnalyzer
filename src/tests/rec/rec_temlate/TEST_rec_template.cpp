@@ -59,9 +59,9 @@ TEST(rec_template_tests, rec_template_from_etf) {
               "cv1_2 description");
     ASSERT_EQ(rec_template.annotations[annotation->second].tier, 0);
 
-    annotation = rec_template.annotations_map.find("tid2_cv2_0");
+    annotation = rec_template.annotations_map.find("tid2_cv1_0");
     ASSERT_TRUE(annotation != rec_template.annotations_map.end());
-    ASSERT_EQ(rec_template.annotations[annotation->second].value, "cv2_0");
+    ASSERT_EQ(rec_template.annotations[annotation->second].value, "cv1_0");
     ASSERT_EQ(rec_template.annotations[annotation->second].description,
               "cv2_0 description");
     ASSERT_EQ(rec_template.annotations[annotation->second].tier, 1);

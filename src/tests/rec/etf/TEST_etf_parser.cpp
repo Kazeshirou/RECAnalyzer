@@ -89,9 +89,9 @@ TEST(rec_etf_parser_tests, parser_header) {
     ASSERT_TRUE(vocabulary != etf.vocabularies.end());
     ASSERT_EQ(vocabulary->second.id, "cv2");
     ASSERT_EQ(vocabulary->second.description, "cv2 description");
-    voc_entry = vocabulary->second.entries.find("cv2_0");
+    voc_entry = vocabulary->second.entries.find("cv1_0");
     ASSERT_TRUE(voc_entry != vocabulary->second.entries.end());
-    ASSERT_EQ(voc_entry->second.id, "cv2_0");
+    ASSERT_EQ(voc_entry->second.id, "cv1_0");
     ASSERT_EQ(voc_entry->second.description, "cv2_0 description");
     voc_entry = vocabulary->second.entries.find("cv2_1");
     ASSERT_TRUE(voc_entry != vocabulary->second.entries.end());
