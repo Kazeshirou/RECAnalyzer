@@ -11,10 +11,10 @@ TEST(rec_etf_parser_tests, parser_header) {
     auto etf = etf_opt.value();
 
 
-    ASSERT_EQ(etf.annotation.author, "author1");
-    ASSERT_EQ(etf.annotation.date, "2021-01-30T11:15:11+03:00");
-    ASSERT_EQ(etf.annotation.format, "3.0");
-    ASSERT_EQ(etf.annotation.version, "3.0");
+    ASSERT_EQ(etf.annotation_document.author, "author1");
+    ASSERT_EQ(etf.annotation_document.date, "2021-01-30T11:15:11+03:00");
+    ASSERT_EQ(etf.annotation_document.format, "3.0");
+    ASSERT_EQ(etf.annotation_document.version, "3.0");
 
 
     ASSERT_EQ(etf.header.media_file, "media_file");

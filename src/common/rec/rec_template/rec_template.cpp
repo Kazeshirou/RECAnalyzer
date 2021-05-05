@@ -7,10 +7,10 @@
 namespace rec {
 
 rec_template_t::rec_template_t(const etf::etf_t& etf)
-        : author{etf.annotation.author},
-          date{etf.annotation.date},
-          format{etf.annotation.format},
-          version{etf.annotation.version},
+        : author{etf.annotation_document.author},
+          date{etf.annotation_document.date},
+          format{etf.annotation_document.format},
+          version{etf.annotation_document.version},
           time_units{etf.header.time_units},
           tiers(etf.tiers.size()) {
     size_t tiers_i = 0;

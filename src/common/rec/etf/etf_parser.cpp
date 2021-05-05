@@ -23,12 +23,13 @@ std::optional<etf_t> Parser::parse_file(const std::string& filename) {
 
 std::optional<etf_t> Parser::parse(const xml_document& doc) {
     etf_t etf;
-    if (!parse_annotation(doc, etf)) {
+    if (!parse_annotation_document(doc, etf)) {
     }
     return etf;
 }
 
-bool Parser::parse_annotation(const ::pugi::xml_node& node, etf_t& etf) {
+bool Parser::parse_annotation_document(const ::pugi::xml_node& node,
+                                       etf_t&                  etf) {
     auto annotation = node.child("ANNOTATION_DOCUMENT");
     if (!annotation) {
         Logger::critical("rec::etf::Parser",
@@ -40,7 +41,7 @@ bool Parser::parse_annotation(const ::pugi::xml_node& node, etf_t& etf) {
         Logger::warning("rec::etf::Parser",
                         "Can't parse AUTHOR attribute of ANNOTATION_DOCUMENT");
     } else {
-        etf.annotation.author = attr.as_string();
+        etf.annotation_document.author = attr.as_string();
     }
 
     attr = annotation.attribute("DATE");
@@ -48,7 +49,7 @@ bool Parser::parse_annotation(const ::pugi::xml_node& node, etf_t& etf) {
         Logger::warning("rec::etf::Parser",
                         "Can't parse DATE attribute of ANNOTATION_DOCUMENT");
     } else {
-        etf.annotation.date = attr.as_string();
+        etf.annotation_document.date = attr.as_string();
     }
 
     attr = annotation.attribute("FORMAT");
@@ -56,7 +57,7 @@ bool Parser::parse_annotation(const ::pugi::xml_node& node, etf_t& etf) {
         Logger::warning("rec::etf::Parser",
                         "Can't parse FORMAT attribute of ANNOTATION_DOCUMENT");
     } else {
-        etf.annotation.format = attr.as_string();
+        etf.annotation_document.format = attr.as_string();
     }
 
     attr = annotation.attribute("VERSION");
@@ -64,7 +65,7 @@ bool Parser::parse_annotation(const ::pugi::xml_node& node, etf_t& etf) {
         Logger::warning("rec::etf::Parser",
                         "Can't parse VERSION attribute of ANNOTATION_DOCUMENT");
     } else {
-        etf.annotation.version = attr.as_string();
+        etf.annotation_document.version = attr.as_string();
     }
 
     parse_header(annotation, etf);

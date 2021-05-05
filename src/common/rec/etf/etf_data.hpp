@@ -7,7 +7,7 @@
 
 namespace rec::etf {
 
-struct annotation_t {
+struct annotation_document_t {
     std::string author;
     std::string date;
     std::string format;
@@ -48,7 +48,7 @@ struct vocabulary_t {
 };
 
 struct etf_t {
-    annotation_t                             annotation;
+    annotation_document_t                    annotation_document;
     header_t                                 header;
     std::map<std::string, tier_t>            tiers;
     std::map<std::string, linguistic_type_t> linguistic_types;
