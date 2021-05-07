@@ -3,6 +3,7 @@
 #include <set>
 
 #include "args_parser.hpp"
+#include "eaf_parser.hpp"
 #include "etf_parser.hpp"
 
 int main(int argc, char* argv[]) {
@@ -70,5 +71,14 @@ int main(int argc, char* argv[]) {
 
     std::cout << fmt::format("[Всего|уникальных] аннотаций: [ {} | {} ]\n",
                              annotations_count, uniq_annotations_count);
+
+    if (args.count("eaf")) {
+        auto eaf_optional =
+            rec::eaf::Parser::parse_file(args["eaf"].as<std::string>());
+        if (!eaf_optional.has_value()) {
+            fmt::print("Не удалось распарсить файл {}!\n",
+                       args["eaf"].as<std::string>());
+        }
+    }
     return 0;
 }
