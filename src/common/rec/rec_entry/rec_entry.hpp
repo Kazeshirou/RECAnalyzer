@@ -42,12 +42,18 @@ struct rec_entry_t {
     };
 
     rec_entry_t() = delete;
+    rec_entry_t(rec_template_t& rec_template_ref);
     rec_entry_t(rec_template_t& rec_template_ref, const eaf::eaf_t& eaf);
     rec_entry_t(const rec_entry_t&) = default;
     rec_entry_t(rec_entry_t&&)      = default;
     rec_entry_t& operator=(const rec_entry_t&) = default;
     rec_entry_t& operator=(rec_entry_t&&) = default;
     ~rec_entry_t()                        = default;
+
+    bool operator==(const rec_entry_t& other) const;
+    bool operator!=(const rec_entry_t& other) const {
+        return !(*this == other);
+    }
 
     void add_time_slots(const eaf::eaf_t& eaf);
     void add_tier(const eaf::eaf_t& eaf, const std::string& id,

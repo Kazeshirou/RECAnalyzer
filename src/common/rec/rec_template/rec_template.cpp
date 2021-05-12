@@ -94,21 +94,6 @@ rec_template_t& rec_template_t::operator=(const etf::etf_t& etf) {
 }
 
 bool rec_template_t::operator==(const rec_template_t& other) const {
-    if (author != other.author) {
-        return false;
-    }
-    if (date != other.date) {
-        return false;
-    }
-    if (format != other.format) {
-        return false;
-    }
-    if (version != other.version) {
-        return false;
-    }
-    if (time_units != other.time_units) {
-        return false;
-    }
     if (tiers.size() != other.tiers.size()) {
         return false;
     }

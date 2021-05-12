@@ -8,6 +8,9 @@
 
 namespace rec {
 
+rec_entry_t::rec_entry_t(rec_template_t& rec_template_ref)
+        : rec_template{rec_template_ref} {}
+
 rec_entry_t::rec_entry_t(rec_template_t&   rec_template_ref,
                          const eaf::eaf_t& eaf)
         : rec_template{rec_template_ref},
@@ -37,6 +40,57 @@ rec_entry_t::rec_entry_t(rec_template_t&   rec_template_ref,
     }
 
     std::sort(annotations.begin(), annotations.end(), compare_annotations);
+}
+
+bool rec_entry_t::operator==(const rec_entry_t& other) const {
+    if (rec_template != other.rec_template) {
+        return false;
+    }
+
+    if (annotations.size() != other.annotations.size()) {
+        return false;
+    }
+
+    if (time_slots.size() != other.time_slots.size()) {
+        return false;
+    }
+
+    if (time_slots_map.size() != other.time_slots_map.size()) {
+        return false;
+    }
+
+    for (size_t i{0}; i < annotations.size(); i++) {
+        if (annotations[i].annotation_id !=
+            other.annotations[i].annotation_id) {
+            return false;
+        }
+        if (annotations[i].ts1 != other.annotations[i].ts1) {
+            return false;
+        }
+        if (annotations[i].ts2 != other.annotations[i].ts2) {
+            return false;
+        }
+    }
+
+    for (size_t i{0}; i < time_slots.size(); i++) {
+        if (time_slots[i].id != other.time_slots[i].id) {
+            return false;
+        }
+        if (time_slots[i].value != other.time_slots[i].value) {
+            return false;
+        }
+    }
+
+    for (const auto& [first, second] : time_slots_map) {
+        auto it = other.time_slots_map.find(first);
+        if (it == other.time_slots_map.end()) {
+            return false;
+        }
+        if (second != it->second)
+            return false;
+    }
+
+    return true;
 }
 
 void rec_entry_t::add_time_slots(const eaf::eaf_t& eaf) {

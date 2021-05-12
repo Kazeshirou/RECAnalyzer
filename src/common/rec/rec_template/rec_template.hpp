@@ -39,7 +39,10 @@ struct rec_template_t {
     rec_template_t& operator=(rec_template_t&&) = default;
     ~rec_template_t()                           = default;
 
-    bool operator==(const rec_template_t& ohter) const;
+    bool operator==(const rec_template_t& other) const;
+    bool operator!=(const rec_template_t& other) const {
+        return !(*this == other);
+    }
 
     std::string               author;
     std::string               date;
