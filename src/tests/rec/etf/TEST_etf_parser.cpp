@@ -4,7 +4,7 @@
 
 namespace rec::etf::tests {
 
-TEST(rec_etf_parser_tests, parser_header) {
+TEST(rec_etf_parser_tests, parse_file) {
     auto etf_opt = Parser::parse_file("src/tests/rec/etf/test.etf");
     ASSERT_TRUE(etf_opt.has_value());
 
