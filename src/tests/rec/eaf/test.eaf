@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ANNOTATION_DOCUMENT AUTHOR="author1" DATE="2021-01-30T11:15:11+03:00" FORMAT="3.0" VERSION="3.0">
+    <HEADER MEDIA_FILE="media_file" TIME_UNITS="time_units">
+        <MEDIA_DESCRIPTOR ATTR1="attr1_value" ATTR2="attr2_value"/>
+        <MEDIA_DESCRIPTOR ATTR3="attr3_value" ATTR4="attr4_value"/>
+        <PROPERTY ATTR="prop_attr1">value1</PROPERTY>
+        <PROPERTY ATTR="prop_attr2">value2</PROPERTY>
+    </HEADER>
+    <TIME_ORDER>
+        <TIME_SLOT TIME_SLOT_ID="t1" TIME_VALUE="10"/>
+        <TIME_SLOT TIME_SLOT_ID="t2" TIME_VALUE="20"/>
+        <TIME_SLOT TIME_SLOT_ID="t3" TIME_VALUE="30"/>
+    </TIME_ORDER>
+    <TIER LINGUISTIC_TYPE_REF="lt1" PARENT_REF="tid3" TIER_ID="tid1">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a1" TIME_SLOT_REF1="t1" TIME_SLOT_REF2="t2">
+                <ANNOTATION_VALUE>aval1</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a2" TIME_SLOT_REF1="t2" TIME_SLOT_REF2="t3">
+                <ANNOTATION_VALUE>aval2</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER LINGUISTIC_TYPE_REF="lt2" TIER_ID="tid2">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a3" TIME_SLOT_REF1="t1" TIME_SLOT_REF2="t3">
+                <ANNOTATION_VALUE>aval3</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER LINGUISTIC_TYPE_REF="lt3" TIER_ID="tid3"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Subdivision" LINGUISTIC_TYPE_ID="lt3"/>
+    <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="cv1" LINGUISTIC_TYPE_ID="lt1"/>
+    <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="cv2" LINGUISTIC_TYPE_ID="lt2"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Included_In" LINGUISTIC_TYPE_ID="lt2"/>
+    <CONSTRAINT DESCRIPTION="constr1 description" STEREOTYPE="Symbolic_Subdivision"/>
+    <CONSTRAINT DESCRIPTION="constr2 description" STEREOTYPE="Included_In"/>
+    <CONTROLLED_VOCABULARY CV_ID="cv1">
+        <DESCRIPTION >cv1 description</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid0">
+            <CVE_VALUE DESCRIPTION="cv1_0 description">cv1_0</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid1">
+            <CVE_VALUE DESCRIPTION="cv1_1 description">cv1_1</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid2">
+            <CVE_VALUE DESCRIPTION="cv1_2 description">cv1_2</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+    <CONTROLLED_VOCABULARY CV_ID="cv2">
+        <DESCRIPTION >cv2 description</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid0">
+            <CVE_VALUE DESCRIPTION="cv2_0 description">cv1_0</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid1">
+            <CVE_VALUE DESCRIPTION="cv2_1 description">cv2_1</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid2">
+            <CVE_VALUE DESCRIPTION="cv2_2 description">cv2_2</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+</ANNOTATION_DOCUMENT>
