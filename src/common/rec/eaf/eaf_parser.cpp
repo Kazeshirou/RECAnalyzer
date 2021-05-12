@@ -165,7 +165,7 @@ bool Parser::parse_tier(const ::pugi::xml_node& node, tier_t& tier) {
         Logger::warning(
             "rec::eaf::Parser",
             fmt::format("Can't find ANNOTATION child tag of TIER {}", tier.id));
-        return false;
+        return true;
     }
 
     for (auto it = annotation_nodes.begin(); it != annotation_nodes.end();
