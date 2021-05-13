@@ -14,17 +14,17 @@ DEFS = FMT_HEADER_ONLY
 PROG = 
 
 ifeq ($(MAKECMDGOALS), $(filter $(MAKECMDGOALS), tests unit_tests))
-	SRC += $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(SRC_DIR)/unix/*')
-	INCLUDES += $(shell find $(SRC_DIR) -name '*.hpp'  -not -path '$(SRC_DIR)/unix/*')
-	DIRS += $(shell find $(SRC_DIR)/ -type d -not -path '$(SRC_DIR)/unix')
+	SRC += $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(SRC_DIR)/unix/*' -not -path '$(SRC_DIR)/gui/*')
+	INCLUDES += $(shell find $(SRC_DIR) -name '*.hpp'  -not -path '$(SRC_DIR)/unix/*' -not -path '$(SRC_DIR)/gui/*')
+	DIRS += $(shell find $(SRC_DIR)/ -type d -not -path '$(SRC_DIR)/unix' -not -path '$(SRC_DIR)/gui')
 
 	PROG = $(BUILD_DIR)/test_$(PROGRAMM)
 	LDFLAGS += -lgtest
 	DEFS += TESTS
 else 
-	SRC += $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(SRC_DIR)/tests/*')
-	INCLUDES += $(shell find $(SRC_DIR) -name '*.hpp' -not -path '$(SRC_DIR)/tests/*')
-	DIRS += $(shell find $(SRC_DIR)/ -type d -not -path '$(SRC_DIR)/tests')
+	SRC += $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(SRC_DIR)/tests/*' -not -path '$(SRC_DIR)/gui/*')
+	INCLUDES += $(shell find $(SRC_DIR) -name '*.hpp' -not -path '$(SRC_DIR)/tests/*' -not -path '$(SRC_DIR)/gui/*')
+	DIRS += $(shell find $(SRC_DIR)/ -type d -not -path '$(SRC_DIR)/tests' -not -path '$(SRC_DIR)/gui')
 	PROG = $(BUILD_DIR)/$(PROGRAMM)
 endif
 

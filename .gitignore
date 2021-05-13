@@ -6,3 +6,4 @@ src_old
 transactions
 tmp_results
 *.pro.user
+src/gui/build-*
