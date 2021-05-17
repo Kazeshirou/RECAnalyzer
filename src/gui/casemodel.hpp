@@ -1,16 +1,16 @@
 #pragma once
 
 #include <QAbstractTableModel>
-#include <rec_entry.hpp>
+#include <mc_entities.hpp>
 
-class RecEntryModel : public QAbstractTableModel {
+class CaseModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
-    RecEntryModel(QObject* parent = nullptr);
-    ~RecEntryModel();
+    CaseModel(QObject* parent = nullptr);
+    ~CaseModel();
 
-    void setRecEntry(rec::rec_entry_t* rec);
+    void setCase(mc::case_t* current_case);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -21,5 +21,5 @@ public:
                         int role = Qt::DisplayRole) const override;
 
 private:
-    rec::rec_entry_t* rec_{nullptr};
+    mc::case_t* case_{nullptr};
 };

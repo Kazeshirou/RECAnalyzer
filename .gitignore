@@ -7,3 +7,4 @@ transactions
 tmp_results
 *.pro.user
 src/gui/build-*
+src/gui/build_*

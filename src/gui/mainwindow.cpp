@@ -2,25 +2,26 @@
 
 #include <QtWidgets>
 #include <eaf_parser.hpp>
+#include <mc_by_time_slots_mining.hpp>
 
+#include "casemodel.hpp"
 #include "pixeldelegate.hpp"
-#include "recentrymodel.hpp"
 
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     currentPath = QDir::homePath();
-    model       = new RecEntryModel(this);
+    model       = new CaseModel(this);
 
     QWidget* centralWidget = new QWidget;
     statusBar()->showMessage("ready!");
 
     view = new QTableView;
     view->setShowGrid(false);
-    view->horizontalHeader()->hide();
-    view->verticalHeader()->hide();
     view->horizontalHeader()->setMinimumSectionSize(1);
     view->verticalHeader()->setMinimumSectionSize(1);
     view->setModel(model);
+    view->horizontalHeader()->show();
+    view->verticalHeader()->show();
 
     PixelDelegate* delegate = new PixelDelegate(this);
     view->setItemDelegate(delegate);
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     QLabel*   oneTimeSlotSizeLabel = new QLabel(tr("One time slot size:"));
     QSpinBox* oneTimeSlotSizeBox   = new QSpinBox;
     oneTimeSlotSizeBox->setMinimum(1);
+    oneTimeSlotSizeBox->setMaximum(1000);
     oneTimeSlotSizeBox->setValue(10);
 
     QMenu*   fileMenu   = new QMenu(tr("&File"), this);
@@ -101,7 +103,9 @@ void MainWindow::openEaf(const QString& fileName) {
         return;
     }
 
-    model->setRecEntry(new rec::rec_entry_t(recTemplate_, eaf_opt.value()));
+    recEntry_ = new rec::rec_entry_t(recTemplate_, eaf_opt.value());
+    mc::transaction::algorithm::By_time_slots_mining alg;
+    model->setCase(new mc::case_t(alg.run(*recEntry_)));
     if (!fileName.startsWith(":/")) {
         currentPath = fileName;
         setWindowTitle(tr("%1 - RECAnalyzer").arg(currentPath));

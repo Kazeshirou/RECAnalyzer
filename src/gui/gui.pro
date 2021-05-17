@@ -10,7 +10,9 @@ CONFIG += c++17
 
 SOURCES += \
     ../../thirdparty/pugixml/pugixml.cpp \
+    ../common/bit_mask.cpp \
     ../common/logger.cpp \
+    ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.cpp \
     ../common/rec/eaf/eaf_parser.cpp \
     ../common/rec/etf/etf_parser.cpp \
     ../common/rec/rec_entry/files/rec_entry_binary_file.cpp \
@@ -19,10 +21,10 @@ SOURCES += \
     ../common/rec/rec_template/files/rec_template_binary_file.cpp \
     ../common/rec/rec_template/files/rec_template_json_file.cpp \
     ../common/rec/rec_template/rec_template.cpp \
+    casemodel.cpp \
     main.cpp \
     mainwindow.cpp \
-    pixeldelegate.cpp \
-    recentrymodel.cpp
+    pixeldelegate.cpp
 
 HEADERS += \
     ../../thirdparty/cxxopts/cxxopts.hpp \
@@ -41,7 +43,11 @@ HEADERS += \
     ../../thirdparty/nlohmann/nlohmann.hpp \
     ../../thirdparty/pugixml/pugiconfig.hpp \
     ../../thirdparty/pugixml/pugixml.hpp \
+    ../common/bit_mask.hpp \
     ../common/logger.hpp \
+    ../common/multimodal_communication/mc_entities.hpp \
+    ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.hpp \
+    ../common/multimodal_communication/transaction_mining/mc_transaction_mining_interface.hpp \
     ../common/rec/eaf/eaf_data.hpp \
     ../common/rec/eaf/eaf_parser.hpp \
     ../common/rec/etf/etf_data.hpp \
@@ -52,9 +58,9 @@ HEADERS += \
     ../common/rec/rec_template/files/rec_template_binary_file.hpp \
     ../common/rec/rec_template/files/rec_template_json_file.hpp \
     ../common/rec/rec_template/rec_template.hpp \
+    casemodel.hpp \
     mainwindow.hpp \
-    pixeldelegate.hpp \
-    recentrymodel.hpp
+    pixeldelegate.hpp
 
 INCLUDEPATH += \
     "../../thirdparty" \
@@ -66,6 +72,8 @@ INCLUDEPATH += \
     "../common/rec/rec_entry/files" \
     "../common/rec/rec_template" \
     "../common/rec/rec_template/files" \
+    "../common/multimodal_communication" \
+    "../common/multimodal_communication/transaction_mining"
 
 DEFINES += \
     FMT_HEADER_ONLY

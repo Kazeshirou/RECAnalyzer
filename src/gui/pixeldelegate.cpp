@@ -31,14 +31,8 @@ void PixelDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
         painter->setBrush(option.palette.text());
     }
 
-    int xMargin = width * 0.1;
-    if (!xMargin) {
-        xMargin = 1;
-    }
-    int yMargin = height * 0.1;
-    if (!yMargin) {
-        yMargin = 1;
-    }
+    int xMargin = 1;
+    int yMargin = 1;
     painter->drawRect(option.rect.x() + xMargin, option.rect.y() + yMargin,
                       width - 2 * xMargin, height - 2 * yMargin);
     painter->restore();
@@ -65,9 +59,10 @@ bool PixelDelegate::helpEvent(QHelpEvent* event, QAbstractItemView* view,
 
 QSize PixelDelegate::sizeHint(const QStyleOptionViewItem&,
                               const QModelIndex& index) const {
-    return QSize(index.data(Qt::SizeHintRole).toSize().width() /
-                     oneTimeSlotSize_ * pixelSize_,
-                 pixelSize_);
+    //    return QSize(index.data(Qt::SizeHintRole).toSize().width() /
+    //                     oneTimeSlotSize_ * pixelSize_,
+    //                 pixelSize_);
+    return QSize(pixelSize_, pixelSize_);
 }
 
 void PixelDelegate::setPixelSize(int size) {

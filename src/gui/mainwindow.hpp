@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QMainWindow>
+#include <rec_entry.hpp>
 #include <rec_template.hpp>
 
-class RecEntryModel;
+class CaseModel;
 QT_BEGIN_NAMESPACE
 class QAction;
 class QTableView;
@@ -16,6 +17,11 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow(QWidget* parent = nullptr);
+    ~MainWindow() {
+        if (recEntry_) {
+            delete recEntry_;
+        }
+    }
 
     void openEaf(const QString& fileName);
 
@@ -26,7 +32,8 @@ public slots:
 
 private:
     rec::rec_template_t recTemplate_;
-    RecEntryModel*      model;
+    rec::rec_entry_t*   recEntry_{nullptr};
+    CaseModel*          model;
     QAction*            openAction;
     QString             currentPath;
     QTableView*         view;
