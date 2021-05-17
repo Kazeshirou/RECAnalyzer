@@ -8,3 +8,4 @@ tmp_results
 *.pro.user
 src/gui/build-*
 src/gui/build_*
+*.pdf
