@@ -13,8 +13,10 @@ case_t By_time_slots_mining::run(rec::rec_entry_t& rec_entry) const {
             if (event.ts1 >= transaction->ts2) {
                 break;
             }
-            if ((event.ts1 <= transaction->ts1) &&
-                (event.ts2 >= transaction->ts2)) {
+            if (event_in_time_interval(
+                    rec_entry, event,
+                    rec_entry.time_slots[transaction->ts1].value,
+                    rec_entry.time_slots[transaction->ts2].value)) {
                 transaction->set_bit(event.annotation_id);
             }
         }
