@@ -7,9 +7,54 @@
 
 namespace mc {
 
-using entry_t = Bit_mask;
+enum class ENTRY_TYPE { NONE = 0, TRANSACTION = 1, SET = 2, RULE = 3 };
 
-struct template_t : public entry_t {};
+struct entry_t : public Bit_mask {
+    entry_t(size_t size = 1) : Bit_mask(size) {}
+    entry_t(const Bit_mask& mask) : Bit_mask(mask) {}
+    entry_t(Bit_mask&& mask) : Bit_mask(mask) {}
+    entry_t(const entry_t&) = default;
+    entry_t(entry_t&&)      = default;
+
+    entry_t& operator=(const Bit_mask& mask) {
+        Bit_mask::operator=(mask);
+        return *this;
+    }
+    entry_t& operator=(Bit_mask&& mask) {
+        Bit_mask::operator=(mask);
+        return *this;
+    }
+    entry_t& operator=(const entry_t&) = default;
+    entry_t& operator=(entry_t&&) = default;
+
+    virtual ~entry_t() = default;
+
+    virtual ENTRY_TYPE get_type() const = 0;
+};
+
+struct set_t : public entry_t {
+    set_t(const Bit_mask& mask, double new_support)
+            : entry_t(mask), support{new_support} {}
+
+    ENTRY_TYPE get_type() const override {
+        return type;
+    }
+
+    double                      support{0.};
+    static constexpr ENTRY_TYPE type{ENTRY_TYPE::SET};
+};
+
+struct rule_t : public set_t {
+    rule_t(const Bit_mask& mask, double new_support, double new_confidence)
+            : set_t(mask, new_support), confidence{new_confidence} {}
+
+    ENTRY_TYPE get_type() const override {
+        return type;
+    }
+
+    double                      confidence{0.};
+    static constexpr ENTRY_TYPE type{ENTRY_TYPE::RULE};
+};
 
 struct transaction_t : public entry_t {
     transaction_t(rec::rec_entry_t& new_rec_entry, size_t new_ts1,
@@ -18,9 +63,15 @@ struct transaction_t : public entry_t {
               rec_entry{new_rec_entry},
               ts1{new_ts1},
               ts2{new_ts2} {}
-    rec::rec_entry_t& rec_entry;
-    size_t            ts1;
-    size_t            ts2;
+
+    ENTRY_TYPE get_type() const override {
+        return type;
+    }
+
+    rec::rec_entry_t&           rec_entry;
+    size_t                      ts1;
+    size_t                      ts2;
+    static constexpr ENTRY_TYPE type{ENTRY_TYPE::TRANSACTION};
 };
 
 struct case_t : public std::vector<entry_t*> {
