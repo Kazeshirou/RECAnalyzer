@@ -53,8 +53,12 @@ public:
                     (event_ts2 - event_ts1) * annotation_settings.value + 0.5;
 
                 int64_t real_part = ts2 - ts1;
-                real_part -= (event_ts1 - ts1);
-                real_part -= (ts2 - event_ts2);
+                if (event_ts1 > ts1) {
+                    real_part -= event_ts1 - ts1;
+                }
+                if (ts2 > event_ts2) {
+                    real_part -= ts2 - event_ts2;
+                }
 
                 if (real_part < expected_part) {
                     return false;
