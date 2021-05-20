@@ -29,7 +29,9 @@ struct entry_t : public Bit_mask {
 
     virtual ~entry_t() = default;
 
-    virtual ENTRY_TYPE get_type() const = 0;
+    virtual ENTRY_TYPE get_type() const {
+        return ENTRY_TYPE::NONE;
+    };
 };
 
 struct set_t : public entry_t {
