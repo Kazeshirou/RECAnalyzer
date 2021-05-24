@@ -13,7 +13,8 @@ struct apriori_settings_t {
 
 case_t apriori_sets(const apriori_settings_t& settings,
                     const case_t&             transactions);
-case_t apriori_rules(const apriori_settings_t& settings, const case_t& sets);
+case_t apriori_rules(const apriori_settings_t& settings,
+                     const case_t&             sorted_sets);
 
 
 }  // namespace mc::assotiation_mining::algorithm

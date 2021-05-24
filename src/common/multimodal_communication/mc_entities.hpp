@@ -48,14 +48,18 @@ struct set_t : public entry_t {
 };
 
 struct rule_t : public set_t {
-    rule_t(const Bit_mask& mask, double new_support, double new_confidence)
-            : set_t(mask, new_support), confidence{new_confidence} {}
+    rule_t(const Bit_mask& mask, double new_support, double new_confidence,
+           size_t new_target)
+            : set_t(mask, new_support),
+              confidence{new_confidence},
+              target{new_target} {}
 
     ENTRY_TYPE get_type() const override {
         return type;
     }
 
     double                      confidence{0.};
+    size_t                      target;
     static constexpr ENTRY_TYPE type{ENTRY_TYPE::RULE};
 };
 

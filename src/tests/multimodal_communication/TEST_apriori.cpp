@@ -4,7 +4,7 @@
 
 namespace mc::assotiation_mining::algorithm::tests {
 
-TEST(apriori_test, apriori) {
+TEST(apriori_tests, apriori) {
     case_t test_case;
     test_case.push_back(new entry_t(3));
     test_case.push_back(new entry_t(3));
@@ -26,6 +26,24 @@ TEST(apriori_test, apriori) {
     ASSERT_NEAR(static_cast<set_t*>(sets[3])->support, 0.3333, 0.0001);
     ASSERT_EQ(sets[4]->data()[0], 4);
     ASSERT_NEAR(static_cast<set_t*>(sets[4])->support, 0.6666, 0.0001);
+
+    sets.sort();
+
+    auto&& rules = apriori_rules(apriori_settings_t{}, sets);
+    ASSERT_EQ(rules.size(), 4);
+    ASSERT_EQ(rules[0]->data()[0], 5);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[0])->support, 0.3333, 0.0001);
+    ASSERT_EQ(static_cast<rule_t*>(rules[0])->target, 0);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[0])->confidence, 0.5, 0.0001);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[1])->support, 0.3333, 0.0001);
+    ASSERT_EQ(static_cast<rule_t*>(rules[1])->target, 2);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[1])->confidence, 1., 0.0001);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[2])->support, 0.3333, 0.0001);
+    ASSERT_EQ(static_cast<rule_t*>(rules[2])->target, 1);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[2])->confidence, 0.5, 0.0001);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[3])->support, 0.3333, 0.0001);
+    ASSERT_EQ(static_cast<rule_t*>(rules[3])->target, 2);
+    ASSERT_NEAR(static_cast<rule_t*>(rules[3])->confidence, 0.5, 0.0001);
 }
 
 }  // namespace mc::assotiation_mining::algorithm::tests

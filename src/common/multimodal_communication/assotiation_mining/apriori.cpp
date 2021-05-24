@@ -59,12 +59,36 @@ case_t apriori_sets(const apriori_settings_t& settings,
     return sets;
 }
 
-case_t apriori_rules(const apriori_settings_t& settings, const case_t& sets) {
-    (void)settings;
-    (void)sets;
-    // for (const auto& set : sets) {
-    // }
-    return case_t();
+case_t apriori_rules(const apriori_settings_t& settings,
+                     const case_t&             sorted_sets) {
+    case_t rules;
+    for (const auto& set : sorted_sets) {
+        if (set->ones() <= 1) {
+            continue;
+        }
+        double support = static_cast<const set_t*>(set)->support;
+        for (size_t i{0}; i < set->size(); i++) {
+            if (!set->check_bit(i)) {
+                continue;
+            }
+
+            Bit_mask condition(*set);
+            condition.set_bit(i, false);
+
+            auto it = sorted_sets.find(condition);
+            if (it == sorted_sets.end()) {
+                continue;
+            }
+
+            double confidence =
+                support / static_cast<const set_t*>(*it)->support;
+            if ((confidence >= settings.min_confidence) &&
+                (confidence <= settings.max_confidence)) {
+                rules.push_back(new rule_t(*set, support, confidence, i));
+            }
+        }
+    }
+    return rules;
 }
 
 }  // namespace mc::assotiation_mining::algorithm
