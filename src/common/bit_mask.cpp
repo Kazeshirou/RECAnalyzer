@@ -225,3 +225,75 @@ bool Bit_mask::operator==(const Bit_mask& other) const {
 
     return true;
 }
+
+bool Bit_mask::operator<(const Bit_mask& other) const {
+    size_t max_size, min_size;
+    bool   other_greater{false};
+    if (data_.size() > other.data_.size()) {
+        max_size = data_.size();
+        min_size = other.data_.size();
+    } else {
+        other_greater = true;
+        min_size      = data_.size();
+        max_size      = other.data_.size();
+    }
+
+    for (size_t i{0}; i < min_size; i++) {
+        if (data_[i] > other.data_[i]) {
+            return false;
+        } else if (data_[i] < other.data_[i]) {
+            return true;
+        }
+    }
+
+    if (other_greater) {
+        for (size_t i{min_size}; i < max_size; i++) {
+            if (other.data_[i]) {
+                return true;
+            }
+        }
+    } else {
+        for (size_t i{min_size}; i < max_size; i++) {
+            if (data_[i]) {
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
+bool Bit_mask::operator>(const Bit_mask& other) const {
+    size_t max_size, min_size;
+    bool   other_greater{false};
+    if (data_.size() > other.data_.size()) {
+        max_size = data_.size();
+        min_size = other.data_.size();
+    } else {
+        other_greater = true;
+        min_size      = data_.size();
+        max_size      = other.data_.size();
+    }
+
+    for (size_t i{0}; i < min_size; i++) {
+        if (data_[i] < other.data_[i]) {
+            return false;
+        } else if (data_[i] > other.data_[i]) {
+            return true;
+        }
+    }
+
+    if (other_greater) {
+        for (size_t i{min_size}; i < max_size; i++) {
+            if (other.data_[i]) {
+                return false;
+            }
+        }
+    } else {
+        for (size_t i{min_size}; i < max_size; i++) {
+            if (data_[i]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

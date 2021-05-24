@@ -46,12 +46,8 @@ public:
     bool operator!=(const Bit_mask& other) const {
         return !(*this == other);
     }
-    bool operator<(const Bit_mask& other) const {
-        return ones() < other.ones();
-    }
-    bool operator>(const Bit_mask& other) const {
-        return ones() > other.ones();
-    }
+    bool operator<(const Bit_mask& other) const;
+    bool operator>(const Bit_mask& other) const;
     bool operator<=(const Bit_mask& other) const {
         return !(*this > other);
     }

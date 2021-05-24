@@ -59,7 +59,11 @@ case_t apriori_sets(const apriori_settings_t& settings,
     return sets;
 }
 
-case_t apriori_rules(const apriori_settings_t&, const case_t&) {
+case_t apriori_rules(const apriori_settings_t& settings, const case_t& sets) {
+    (void)settings;
+    (void)sets;
+    // for (const auto& set : sets) {
+    // }
     return case_t();
 }
 

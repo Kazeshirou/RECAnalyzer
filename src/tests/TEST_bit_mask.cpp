@@ -159,4 +159,23 @@ TEST(bit_mask_tests, bit_mask_operators) {
     ASSERT_EQ(xor_eq_result, xor_result);
 }
 
+TEST(bit_mask_tests, bit_mask_comparison_operators) {
+    size_t   size{68ul};
+    Bit_mask mask(size);
+    mask.data()[0] = {255ul};
+    size_t   another_size{63ul};
+    Bit_mask another_mask(another_size);
+    another_mask.data()[0] = {255ul};
+
+    ASSERT_EQ(mask, another_mask);
+
+    mask.data()[1] = {1ul};
+    ASSERT_LT(another_mask, mask);
+    ASSERT_GT(mask, another_mask);
+
+    mask.data()[0] = {254ul};
+    ASSERT_LT(mask, another_mask);
+    ASSERT_GT(another_mask, mask);
+}
+
 }  // namespace tests
