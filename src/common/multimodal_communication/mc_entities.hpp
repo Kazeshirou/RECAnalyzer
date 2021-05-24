@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <vector>
 
 #include "bit_mask.hpp"
@@ -82,6 +83,14 @@ struct case_t : public std::vector<entry_t*> {
             delete entry;
         }
     }
+
+    void sort() {
+        std::sort(begin(), end(),
+                  [](auto& one, auto& other) { return *one < *other; });
+    }
+
+    case_t::iterator       find(const entry_t& value);
+    case_t::const_iterator find(const entry_t& value) const;
 };
 
 }  // namespace mc
