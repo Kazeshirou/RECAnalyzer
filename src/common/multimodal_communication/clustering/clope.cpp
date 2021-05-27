@@ -56,19 +56,13 @@ static void rm_transaction_from_cluster(cluster_t&     cluster,
 }
 
 static size_t choose_cluster(std::vector<cluster_t>& clusters,
-                             const entry_t& transaction, double r,
-                             size_t current_i = -1u) {
-    double max_delta = 0.;
+                             const entry_t& transaction, double r) {
+    double max_delta = delta_add(clusters[0], transaction, r);
     size_t max_i{0};
-    if (0 != current_i) {
-        max_delta = delta_add(clusters[0], transaction, r);
-    }
 
     for (size_t i{1}; i < clusters.size(); i++) {
-        double delta = 0.;
-        if (i != current_i) {
-            delta = delta_add(clusters[i], transaction, r);
-        }
+        double delta = delta_add(clusters[i], transaction, r);
+
         if (delta > max_delta) {
             max_delta = delta;
             max_i     = i;
