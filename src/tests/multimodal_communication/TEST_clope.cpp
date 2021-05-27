@@ -18,7 +18,8 @@ TEST(clope_tests, clope_test) {
     test_case[3]->data()[0] = 24;
     test_case[4]->data()[0] = 56;
 
-    auto distribution = clope(test_case, 2.);
+    auto [clusters_count, distribution] = clope(test_case, 2.);
+    ASSERT_EQ(clusters_count, 2);
     ASSERT_EQ(distribution[0], 0);
     ASSERT_EQ(distribution[1], 0);
     ASSERT_EQ(distribution[2], 0);
