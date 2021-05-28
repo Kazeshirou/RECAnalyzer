@@ -4,10 +4,9 @@
 #include <rec_entry.hpp>
 #include <rec_template.hpp>
 
-class CaseModel;
+class CaseWidget;
 QT_BEGIN_NAMESPACE
 class QAction;
-class QTableView;
 class QEvent;
 QT_END_NAMESPACE
 
@@ -28,13 +27,11 @@ public:
 public slots:
     void chooseEaf();
     void showAboutBox();
-    void updateView();
 
 private:
     rec::rec_template_t recTemplate_;
     rec::rec_entry_t*   recEntry_{nullptr};
-    CaseModel*          model;
     QAction*            openAction;
     QString             currentPath;
-    QTableView*         view;
+    CaseWidget*         caseWidget;
 };

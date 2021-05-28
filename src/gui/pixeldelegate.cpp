@@ -1,6 +1,6 @@
 #include "pixeldelegate.hpp"
 
-#include <QHelpEvent>
+//#include <QHelpEvent>
 #include <QPainter>
 #include <QToolTip>
 #include <QWhatsThis>
@@ -38,24 +38,24 @@ void PixelDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
     painter->restore();
 }
 
-bool PixelDelegate::helpEvent(QHelpEvent* event, QAbstractItemView* view,
-                              const QStyleOptionViewItem& option,
-                              const QModelIndex&          index) {
-    if (event->type() == QEvent::ToolTip) {
-        if (event->type() == QEvent::ToolTip) {
-            if (!index.data(Qt::StatusTipRole).isNull()) {
-                emit setStatusTip(index.data(Qt::StatusTipRole).toString());
-            }
-            if (!index.data(Qt::ToolTipRole).isNull()) {
-                QToolTip::showText(event->globalPos(),
-                                   index.data(Qt::ToolTipRole).toString());
-                return true;
-            }
-        }
-    }
+// bool PixelDelegate::helpEvent(QHelpEvent* event, QAbstractItemView* view,
+//                              const QStyleOptionViewItem& option,
+//                              const QModelIndex&          index) {
+//    if (event->type() == QEvent::ToolTip) {
+//        if (event->type() == QEvent::ToolTip) {
+//            if (!index.data(Qt::StatusTipRole).isNull()) {
+//                emit setStatusTip(index.data(Qt::StatusTipRole).toString());
+//            }
+//            if (!index.data(Qt::ToolTipRole).isNull()) {
+//                QToolTip::showText(event->globalPos(),
+//                                   index.data(Qt::ToolTipRole).toString());
+//                return true;
+//            }
+//        }
+//    }
 
-    return QAbstractItemDelegate::helpEvent(event, view, option, index);
-}
+//    return QAbstractItemDelegate::helpEvent(event, view, option, index);
+//}
 
 QSize PixelDelegate::sizeHint(const QStyleOptionViewItem&,
                               const QModelIndex& index) const {

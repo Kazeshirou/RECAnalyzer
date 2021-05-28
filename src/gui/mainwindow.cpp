@@ -4,27 +4,16 @@
 #include <eaf_parser.hpp>
 #include <mc_by_time_slots_mining.hpp>
 
-#include "casemodel.hpp"
-#include "pixeldelegate.hpp"
+#include "casewidget.hpp"
 
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     currentPath = QDir::homePath();
-    model       = new CaseModel(this);
 
     QWidget* centralWidget = new QWidget;
     statusBar()->showMessage("ready!");
 
-    view = new QTableView;
-    view->setShowGrid(false);
-    view->horizontalHeader()->setMinimumSectionSize(1);
-    view->verticalHeader()->setMinimumSectionSize(1);
-    view->setModel(model);
-    view->horizontalHeader()->show();
-    view->verticalHeader()->show();
-
-    PixelDelegate* delegate = new PixelDelegate(this);
-    view->setItemDelegate(delegate);
+    caseWidget = new CaseWidget(this);
 
     QLabel*   pixelSizeLabel   = new QLabel(tr("Pixel size:"));
     QSpinBox* pixelSizeSpinBox = new QSpinBox;
@@ -56,17 +45,17 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::showAboutBox);
 
-    connect(pixelSizeSpinBox, &QSpinBox::valueChanged, delegate,
-            &PixelDelegate::setPixelSize);
-    connect(pixelSizeSpinBox, &QSpinBox::valueChanged, this,
-            &MainWindow::updateView);
-    connect(oneTimeSlotSizeBox, &QSpinBox::valueChanged, delegate,
-            &PixelDelegate::setOneTimeSlotSize);
-    connect(oneTimeSlotSizeBox, &QSpinBox::valueChanged, this,
-            &MainWindow::updateView);
+    connect(pixelSizeSpinBox, &QSpinBox::valueChanged, caseWidget,
+            &CaseWidget::changePixelSize);
+    connect(pixelSizeSpinBox, &QSpinBox::valueChanged, caseWidget,
+            &CaseWidget::updateView);
+    //    connect(oneTimeSlotSizeBox, &QSpinBox::valueChanged, delegate,
+    //            &PixelDelegate::setOneTimeSlotSize);
+    connect(oneTimeSlotSizeBox, &QSpinBox::valueChanged, caseWidget,
+            &CaseWidget::updateView);
 
-    connect(delegate, &PixelDelegate::setStatusTip, statusBar(),
-            &QStatusBar::showMessage);
+    //    connect(delegate, &PixelDelegate::setStatusTip, statusBar(),
+    //            &QStatusBar::showMessage);
 
 
     QHBoxLayout* controlsLayout = new QHBoxLayout;
@@ -77,7 +66,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     controlsLayout->addStretch(1);
 
     QVBoxLayout* mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(view);
+    mainLayout->addWidget(caseWidget);
     mainLayout->addLayout(controlsLayout);
     centralWidget->setLayout(mainLayout);
 
@@ -105,20 +94,15 @@ void MainWindow::openEaf(const QString& fileName) {
 
     recEntry_ = new rec::rec_entry_t(recTemplate_, eaf_opt.value());
     mc::transaction::algorithm::By_time_slots_mining alg;
-    model->setCase(new mc::case_t(alg.run(*recEntry_)));
+    caseWidget->setCase(new mc::case_t(alg.run(*recEntry_)));
     if (!fileName.startsWith(":/")) {
         currentPath = fileName;
         setWindowTitle(tr("%1 - RECAnalyzer").arg(currentPath));
     }
-    updateView();
+    caseWidget->updateView();
 }
 
 
 void MainWindow::showAboutBox() {
     QMessageBox::about(this, tr("About the RECAnalyzer"), tr("Desctiprion"));
-}
-
-void MainWindow::updateView() {
-    view->resizeColumnsToContents();
-    view->resizeRowsToContents();
 }

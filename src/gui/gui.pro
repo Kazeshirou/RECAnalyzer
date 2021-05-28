@@ -12,6 +12,9 @@ SOURCES += \
     ../../thirdparty/pugixml/pugixml.cpp \
     ../common/bit_mask.cpp \
     ../common/logger.cpp \
+    ../common/multimodal_communication/assotiation_mining/apriori.cpp \
+    ../common/multimodal_communication/clustering/clope.cpp \
+    ../common/multimodal_communication/mc_entities.cpp \
     ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.cpp \
     ../common/rec/eaf/eaf_parser.cpp \
     ../common/rec/etf/etf_parser.cpp \
@@ -22,6 +25,8 @@ SOURCES += \
     ../common/rec/rec_template/files/rec_template_json_file.cpp \
     ../common/rec/rec_template/rec_template.cpp \
     casemodel.cpp \
+    casewidget.cpp \
+    casewindow.cpp \
     main.cpp \
     mainwindow.cpp \
     pixeldelegate.cpp
@@ -45,6 +50,8 @@ HEADERS += \
     ../../thirdparty/pugixml/pugixml.hpp \
     ../common/bit_mask.hpp \
     ../common/logger.hpp \
+    ../common/multimodal_communication/assotiation_mining/apriori.hpp \
+    ../common/multimodal_communication/clustering/clope.hpp \
     ../common/multimodal_communication/mc_entities.hpp \
     ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.hpp \
     ../common/multimodal_communication/transaction_mining/mc_transaction_mining_interface.hpp \
@@ -59,6 +66,8 @@ HEADERS += \
     ../common/rec/rec_template/files/rec_template_json_file.hpp \
     ../common/rec/rec_template/rec_template.hpp \
     casemodel.hpp \
+    casewidget.hpp \
+    casewindow.hpp \
     mainwindow.hpp \
     pixeldelegate.hpp
 
@@ -73,7 +82,9 @@ INCLUDEPATH += \
     "../common/rec/rec_template" \
     "../common/rec/rec_template/files" \
     "../common/multimodal_communication" \
-    "../common/multimodal_communication/transaction_mining"
+    "../common/multimodal_communication/transaction_mining" \
+    "../common/multimodal_communication/assotiation_mining" \
+    "../common/multimodal_communication/clustering"
 
 DEFINES += \
     FMT_HEADER_ONLY

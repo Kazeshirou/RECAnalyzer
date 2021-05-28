@@ -33,9 +33,9 @@ public slots:
     void setPixelSize(int size);
 
 protected:
-    bool helpEvent(QHelpEvent* event, QAbstractItemView* view,
-                   const QStyleOptionViewItem& option,
-                   const QModelIndex&          index) override;
+    //    bool helpEvent(QHelpEvent* event, QAbstractItemView* view,
+    //                   const QStyleOptionViewItem& option,
+    //                   const QModelIndex&          index) override;
 
 private:
     int pixelSize_{12};

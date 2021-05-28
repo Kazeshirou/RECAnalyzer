@@ -10,12 +10,12 @@ CaseModel::~CaseModel() {
     }
 }
 
-void CaseModel::setCase(mc::case_t* current_case) {
+void CaseModel::setCase(mc::case_t* newCase) {
     beginResetModel();
     if (case_) {
         delete case_;
     }
-    case_ = current_case;
+    case_ = newCase;
     endResetModel();
 }
 
@@ -81,10 +81,15 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
     }
 }
 
-QVariant CaseModel::headerData(int /* section */,
-                               Qt::Orientation /* orientation */,
+QVariant CaseModel::headerData(int i, Qt::Orientation orientation,
                                int role) const {
-    if (role == Qt::SizeHintRole)
-        return QSize(4, 4);
+    switch (role) {
+        case Qt::SizeHintRole:
+            if (orientation == Qt::Orientation::Horizontal) {
+                return QSize(1, 5);
+            } else {
+                return QSize(5, 1);
+            };
+    }
     return QVariant();
 }
