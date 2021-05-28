@@ -34,10 +34,12 @@ void CaseWidget::updateView() {
 
 void CaseWidget::changePixelSize(int size) {
     delegate_->setPixelSize(size);
+    updateView();
 }
 
 void CaseWidget::setCase(mc::case_t* newCase) {
     model_->setCase(newCase);
+    updateView();
 }
 
 CaseWidget::~CaseWidget() {
@@ -47,7 +49,6 @@ CaseWidget::~CaseWidget() {
     if (delegate_) {
         delete delegate_;
     }
-
     if (view_) {
         delete view_;
     }
