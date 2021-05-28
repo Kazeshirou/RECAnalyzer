@@ -97,15 +97,13 @@ std::pair<size_t, std::vector<size_t>> clope(const case_t& transactions,
     while (true) {
         bool moved{false};
         for (size_t i{0}; i < transactions.size(); i++) {
-            size_t cluster_i = choose_cluster(clusters, *transactions[i], r);
-            if (transaction_clusters[i] == cluster_i) {
-                continue;
-            }
-
-            moved = true;
-            update_cluster(clusters[cluster_i], *transactions[i]);
             rm_transaction_from_cluster(clusters[transaction_clusters[i]],
                                         *transactions[i]);
+            size_t cluster_i = choose_cluster(clusters, *transactions[i], r);
+            if (transaction_clusters[i] != cluster_i) {
+                moved = true;
+            }
+            update_cluster(clusters[cluster_i], *transactions[i]);
             transaction_clusters[i] = cluster_i;
         }
         if (!moved) {
