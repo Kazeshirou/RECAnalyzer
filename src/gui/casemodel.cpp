@@ -43,9 +43,7 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
 
     auto& tran = *static_cast<mc::transaction_t*>(case_->at(index.column()));
     if (role == Qt::SizeHintRole) {
-        return QSize(tran.rec_entry.time_slots[tran.ts2].value -
-                         tran.rec_entry.time_slots[tran.ts1].value,
-                     1);
+        return QSize(tran.ts2 - tran.ts1, 1);
     }
 
     if ((role != Qt::DisplayRole) && (role != Qt::UserRole) &&
@@ -66,16 +64,16 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
             return tr("%1: %2  [ %3; %4 ]")
                 .arg(tier.name.c_str())
                 .arg(annotation.value.c_str())
-                .arg(int(tran.rec_entry.time_slots[tran.ts1].value))
-                .arg(int(tran.rec_entry.time_slots[tran.ts2].value));
+                .arg(int(tran.ts1))
+                .arg(int(tran.ts2));
         case Qt::UserRole:
             return int(index.row());
         case Qt::StatusTipRole:
             return tr("%1: %2  [ %3; %4 ]")
                 .arg(tier.name.c_str())
                 .arg(annotation.value.c_str())
-                .arg(int(tran.rec_entry.time_slots[tran.ts1].value))
-                .arg(int(tran.rec_entry.time_slots[tran.ts2].value));
+                .arg(int(tran.ts1))
+                .arg(int(tran.ts2));
         default:
             return QVariant();
     }
