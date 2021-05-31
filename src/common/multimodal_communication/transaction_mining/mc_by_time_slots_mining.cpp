@@ -20,6 +20,10 @@ case_t By_time_slots_mining::run(rec::rec_entry_t& rec_entry) const {
                 transaction->set_bit(event.annotation_id);
             }
         }
+        if (!transaction->ones()) {
+            delete transaction;
+            continue;
+        }
         new_case.push_back(transaction);
     }
 
