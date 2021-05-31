@@ -80,7 +80,7 @@ public:
         return false;
     }
 
-    void set_settings(const transaction_mining_settings_t settings) {
+    void set_settings(const transaction_mining_settings_t& settings) {
         settings_ = settings;
     }
 
