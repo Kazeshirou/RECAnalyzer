@@ -1,0 +1,125 @@
+{
+    "target_folder": "bin/",
+    "name": "test_analysis",
+    "rec_template": "src/tests/rec/etf/test.etf",
+    "convert": [
+        {
+            "type": "rec_template",
+            "from": "src/tests/rec/etf/test.etf",
+            "to": "bin/test_etf.json"
+        }
+    ],
+    "transactions": [
+        {
+            "type": "time_slots",
+            "output_file_type": "json",
+            "exclude_tiers": [
+                "слой1"
+            ],
+            "exclude_annotations": [
+                "тексе_цель_аннотация1"
+            ],
+            "files": [
+                "corpus/f*.eaf"
+            ]
+        },
+        {
+            "type": "window",
+            "size": 100,
+            "step_multiplier": 0.5,
+            "output_file_type": "csv",
+            "tiers_settings": [
+                {
+                    "tier": "tier1",
+                    "mode": {
+                        "type": "any"
+                    }
+                }
+            ],
+            "annotations_settings": [
+                {
+                    "annotation": "tier1",
+                    "mode": {
+                        "type": "any"
+                    }
+                }
+            ],
+            "exclude_tiers": [
+                "слой1"
+            ],
+            "exclude_annotations": [
+                "тексе_цель_аннотация1"
+            ],
+            "files": [
+                "corpus/a*.eaf"
+            ]
+        },
+        {
+            "type": "target_tier",
+            "target_tier": "рот",
+            "output_file_type": "binary",
+            "exclude_tiers": [
+                "слой1"
+            ],
+            "exclude_annotations": [
+                "тексе_цель_аннотация1"
+            ],
+            "files": [
+                "corpus/b*.eaf"
+            ]
+        }
+    ],
+    "sets": [
+        {
+            "output_file_type": "binary",
+            "transactions_files": [
+                "file1",
+                "file2"
+            ],
+            "exclude_tiers": [
+                "слой1"
+            ],
+            "exclude_annotations": [
+                "тексе_цель_аннотация1"
+            ],
+            "min_support": 0.0,
+            "max_support": 0.99
+        }
+    ],
+    "rules": [
+        {
+            "output_file_type": "binary",
+            "sets_files": [
+                "file1",
+                "file2"
+            ],
+            "exclude_tiers": [
+                "слой1"
+            ],
+            "exclude_annotations": [
+                "тексе_цель_аннотация1"
+            ],
+            "min_support": 0.0,
+            "max_support": 0.99,
+            "min_confidence": 0.0,
+            "max_confidence": 0.99
+        }
+    ],
+    "clustering": [
+        {
+            "output_file_type": "binary",
+            "exclude_tiers": [
+                "слой1"
+            ],
+            "exclude_annotations": [
+                "тексе_цель_аннотация1"
+            ],
+            "input_files": [
+                "file1",
+                "file2",
+                "file3"
+            ],
+            "r": 2.0
+        }
+    ]
+}

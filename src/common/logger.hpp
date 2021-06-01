@@ -7,6 +7,7 @@ namespace my_log {
 class Logger {
 public:
     static void debug(const std::string& system, const std::string& msg);
+    static void info(const std::string& system, const std::string& msg);
     static void warning(const std::string& system, const std::string& msg);
     static void critical(const std::string& system, const std::string& msg);
 

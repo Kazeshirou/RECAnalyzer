@@ -8,7 +8,13 @@
 
 namespace mc {
 
-enum class ENTRY_TYPE { NONE = 0, TRANSACTION = 1, SET = 2, RULE = 3 };
+enum class ENTRY_TYPE {
+    NONE        = 0,
+    TRANSACTION = 1,
+    SET         = 2,
+    RULE        = 3,
+    CLUSTER     = 4
+};
 
 struct entry_t : public Bit_mask {
     entry_t(size_t size = 1) : Bit_mask(size) {}
@@ -64,6 +70,13 @@ struct rule_t : public set_t {
 };
 
 struct transaction_t : public entry_t {
+    transaction_t(const Bit_mask& mask, rec::rec_entry_t& new_rec_entry,
+                  size_t new_ts1, size_t new_ts2)
+            : entry_t(mask),
+              rec_entry{new_rec_entry},
+              ts1{new_ts1},
+              ts2{new_ts2} {}
+
     transaction_t(rec::rec_entry_t& new_rec_entry, size_t new_ts1,
                   size_t new_ts2)
             : entry_t(new_rec_entry.rec_template.annotations.size()),
@@ -79,6 +92,18 @@ struct transaction_t : public entry_t {
     size_t                      ts1;
     size_t                      ts2;
     static constexpr ENTRY_TYPE type{ENTRY_TYPE::TRANSACTION};
+};
+
+struct cluster_t : public entry_t {
+    cluster_t(const Bit_mask& mask, size_t new_cluster)
+            : entry_t(mask), cluster{new_cluster} {}
+
+    ENTRY_TYPE get_type() const override {
+        return type;
+    }
+
+    size_t                      cluster;
+    static constexpr ENTRY_TYPE type{ENTRY_TYPE::CLUSTER};
 };
 
 struct case_t : public std::vector<entry_t*> {

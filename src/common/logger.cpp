@@ -8,6 +8,9 @@ namespace my_log {
 void Logger::debug(const std::string& system, const std::string& msg) {
     inner_log(time(), "DEBUG", system, msg);
 }
+void Logger::info(const std::string& system, const std::string& msg) {
+    inner_log(time(), "INFO", system, msg);
+}
 void Logger::warning(const std::string& system, const std::string& msg) {
     inner_log(time(), "WARNING", system, msg);
 }
