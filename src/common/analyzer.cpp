@@ -157,7 +157,7 @@ bool Analyzer::process_converts(const nlohmann::json& convert_cfg) {
         bool current_result = process_convert(convert);
         my_log::Logger::info(
             "analyzer",
-            fmt::format("    Конфертация файла {}",
+            fmt::format("    Конвертация файла {}",
                         current_result ? "прошла успешно" : "провалена"));
         rv &= current_result;
         if (current_result) {
