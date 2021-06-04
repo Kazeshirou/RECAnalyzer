@@ -376,6 +376,95 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
                                 "Не было найдено ни одного входного файла");
         return false;
     }
+
+    std::string type;
+    if (auto type_json = transactions_cfg.find("type");
+        type_json != transactions_cfg.end()) {
+        type = type_json.value().get<std::string>();
+        my_log::Logger::info(
+            "analyzer", fmt::format("Метод выделения транзакций: {}", type));
+    } else {
+        my_log::Logger::info(
+            "analyzer",
+            "Метод выделения транзакций не указан, по умолчанию: time_slots");
+    }
+
+    mc::transaction::algorithm::Transaction_mining_interface* alg = nullptr;
+    if (type == "time_slots") {
+        alg = new mc::transaction::algorithm::By_time_slots_mining;
+    } else if (type == "window") {
+        using Window = mc::transaction::algorithm::Window_mining;
+        auto                      real_alg = new Window;
+        Window::window_settings_t settings;
+
+        if (auto size = transactions_cfg.find("size");
+            size == transactions_cfg.end()) {
+            my_log::Logger::warning("analyzer",
+                                    "Не указана настройка метода size, будет "
+                                    "использовано значение по умолчанию");
+        } else {
+            settings.size = size.value().get<size_t>();
+        }
+
+        if (auto step_multiplier = transactions_cfg.find("step_multiplier");
+            step_multiplier == transactions_cfg.end()) {
+            my_log::Logger::warning(
+                "analyzer",
+                "Не указана настройка метода step_multiplier, будет "
+                "использовано значение по умолчанию");
+        } else {
+            settings.step_multiplier = step_multiplier.value().get<double>();
+        }
+
+        my_log::Logger::info(
+            "analyzer",
+            fmt::format("Настройки метода: size = {}; step_multiplier = {}",
+                        settings.size, settings.step_multiplier));
+        real_alg->set_window_settings(settings);
+        alg = real_alg;
+    } else if (type == "target_tier") {
+        using Target_tier = mc::transaction::algorithm::Target_tier_mining;
+        auto                         real_alg = new Target_tier;
+        Target_tier::tier_settings_t settings;
+
+
+        if (auto target_tier = transactions_cfg.find("target_tier");
+            target_tier == transactions_cfg.end()) {
+            my_log::Logger::warning(
+                "analyzer", "Не указана настройка метода target_tier, будет "
+                            "использовано значение по умолчанию");
+        } else {
+            settings.target_tier = target_tier.value().get<std::string>();
+        }
+
+        if (auto ignore_intervals_without_target_tier =
+                transactions_cfg.find("ignore_intervals_without_target_tier");
+            ignore_intervals_without_target_tier == transactions_cfg.end()) {
+            my_log::Logger::warning(
+                "analyzer", "Не указана настройка метода "
+                            "ignore_intervals_without_target_tier, будет "
+                            "использовано значение по умолчанию");
+        } else {
+            settings.ignore_intervals_without_target_tier =
+                ignore_intervals_without_target_tier.value().get<bool>();
+        }
+
+        my_log::Logger::info(
+            "analyzer",
+            fmt::format("Настройки метода: target_tier = {}; "
+                        "ignore_intervals_without_target_tier = {}",
+                        settings.target_tier,
+                        settings.ignore_intervals_without_target_tier));
+        real_alg->set_tier_settings(settings);
+        alg = real_alg;
+    } else {
+        my_log::Logger::warning(
+            "analyzer",
+            fmt::format("Неизвестный метод выделения транзакций: {}", type));
+        return false;
+    }
+
+    delete alg;
     return true;
 }
 
@@ -668,13 +757,14 @@ std::vector<fs::path> Analyzer::find_files(const std::string& filename) {
     } catch (const fs::filesystem_error& err) {
         my_log::Logger::warning(
             "analyzer",
-            fmt::format("Не удалось открыть директорию для поиска файлов: {}",
-                        filename));
+            fmt::format(
+                "Не удалось открыть директорию для поиска файлов {}: {}",
+                filename, err.what()));
     } catch (const std::regex_error& err) {
         my_log::Logger::warning(
             "analyzer", fmt::format("Не правильно составлено регулярное "
-                                    "выражения для поиска файлов: {}",
-                                    filename));
+                                    "выражения для поиска файлов{}: {}",
+                                    filename, err.what()));
     } catch (const std::exception& err) {
         my_log::Logger::warning(
             "analyzer", fmt::format("Неожиданная ошибка: {}", err.what()));

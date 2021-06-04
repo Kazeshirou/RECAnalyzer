@@ -7,8 +7,8 @@ namespace mc::transaction::algorithm {
 class Target_tier_mining : public Transaction_mining_interface {
 public:
     struct tier_settings_t {
-        size_t target_tier{0};
-        bool   ignore_intervals_without_target_tier{false};
+        std::string target_tier{""};
+        bool        ignore_intervals_without_target_tier{false};
     };
 
     virtual ~Target_tier_mining() = default;

@@ -15,10 +15,15 @@ case_t Target_tier_mining::run(rec::rec_entry_t& rec_entry) const {
 
     size_t t1 = 0;
     size_t t2 = t1;
+    size_t target_tier{0};
+    if (rec_entry.rec_template.tiers_map.count(tier_settings_.target_tier)) {
+        target_tier =
+            rec_entry.rec_template.tiers_map[tier_settings_.target_tier];
+    }
     for (const auto& target_event : rec_entry.annotations) {
         size_t tier_id =
             rec_entry.rec_template.annotations[target_event.annotation_id].tier;
-        if (tier_id != tier_settings_.target_tier) {
+        if (tier_id != target_tier) {
             continue;
         }
 
