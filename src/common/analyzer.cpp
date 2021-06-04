@@ -422,6 +422,8 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
                         settings.size, settings.step_multiplier));
         real_alg->set_window_settings(settings);
         alg = real_alg;
+        type +=
+            fmt::format("_s{}_m{}", settings.size, settings.step_multiplier);
     } else if (type == "target_tier") {
         using Target_tier = mc::transaction::algorithm::Target_tier_mining;
         auto                         real_alg = new Target_tier;
@@ -457,6 +459,8 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
                         settings.ignore_intervals_without_target_tier));
         real_alg->set_tier_settings(settings);
         alg = real_alg;
+        type += fmt::format("_t{}_i{}", settings.target_tier,
+                            settings.ignore_intervals_without_target_tier);
     } else {
         my_log::Logger::warning(
             "analyzer",
@@ -464,8 +468,52 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
         return false;
     }
 
+    mc::case_t new_case;
+    size_t     success{0};
+    for (const auto& filename : filenames) {
+        auto rec_entry_opt = read_rec_entry(filename.string());
+        if (!rec_entry_opt.has_value()) {
+            my_log::Logger::warning(
+                "analyzer",
+                fmt::format("Не удалось распарсить файл разметки: {}",
+                            filename.string()));
+            continue;
+        }
+        auto current_case = alg->run(rec_entry_opt.value());
+        if (!current_case.size()) {
+            my_log::Logger::warning(
+                "analyzer",
+                fmt::format("Не удалось выделить ни одной транзакции: {}",
+                            filename.string()));
+            continue;
+        }
+        ++success;
+        new_case.insert(new_case.end(), current_case.begin(),
+                        current_case.end());
+        current_case.clear();
+        my_log::Logger::info(
+            "analyzer", fmt::format("Из {} выделено {} транзакций",
+                                    filename.string(), current_case.size()));
+    }
+    my_log::Logger::info("analyzer", fmt::format("Всего выделено {} транзакций",
+                                                 new_case.size()));
+    my_log::Logger::info("analyzer",
+                         fmt::format("Успешно обработано файлов {}/{}", success,
+                                     filenames.size()));
+
+    std::string output_filename =
+        fmt::format("{}/{}_{}_tran.{}", analisys_folder_, 1, type, "json");
+    bool rv = true;
+    if (!write_case(new_case, output_filename)) {
+        rv = false;
+    } else {
+        my_log::Logger::info("analyzer",
+                             fmt::format("Выделенные транзакции записаны в {}",
+                                         output_filename));
+    }
+
     delete alg;
-    return true;
+    return rv;
 }
 
 bool Analyzer::process_set([[maybe_unused]] const nlohmann::json& sets_cfg) {
