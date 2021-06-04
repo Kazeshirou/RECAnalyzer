@@ -11,11 +11,11 @@ public:
     static void warning(const std::string& system, const std::string& msg);
     static void critical(const std::string& system, const std::string& msg);
 
+    static size_t time();
+
 protected:
     static void inner_log(size_t time, const std::string& level,
                           const std::string& system, const std::string& msg);
-
-    static size_t time();
 };
 
 }  // namespace my_log

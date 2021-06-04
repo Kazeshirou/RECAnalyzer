@@ -46,7 +46,8 @@ public:
 
 protected:
     bool process_convert(const nlohmann::json& convert_cfg);
-    bool process_transaction(const nlohmann::json& transactions_cfg);
+    bool process_transaction(const nlohmann::json& transactions_cfg,
+                             size_t                uniq_num);
     bool process_set(const nlohmann::json& sets_cfg);
     bool process_rule(const nlohmann::json& rules_cfg);
     bool process_clustering(const nlohmann::json& clustering_cfg);

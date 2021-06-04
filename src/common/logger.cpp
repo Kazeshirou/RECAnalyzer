@@ -18,10 +18,8 @@ void Logger::critical(const std::string& system, const std::string& msg) {
     inner_log(time(), "CRITICAL", system, msg);
 }
 
-void Logger::inner_log([[maybe_unused]] size_t             time,
-                       [[maybe_unused]] const std::string& level,
-                       [[maybe_unused]] const std::string& system,
-                       [[maybe_unused]] const std::string& msg) {
+void Logger::inner_log(size_t time, const std::string& level,
+                       const std::string& system, const std::string& msg) {
     std::cerr << time << " | " << level << " | " << system << " | " << msg
               << std::endl;
     std::cerr.flush();

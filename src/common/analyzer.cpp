@@ -184,7 +184,7 @@ bool Analyzer::process_transactions(const nlohmann::json& transactions_cfg) {
             "analyzer",
             fmt::format("    Выполняется выделение транзакций {}/{}...", ++i,
                         transactions_count));
-        bool current_result = process_transaction(transaction);
+        bool current_result = process_transaction(transaction, i);
         my_log::Logger::info(
             "analyzer",
             fmt::format("    Выделение транзакций {}",
@@ -339,7 +339,8 @@ bool Analyzer::process_convert(const nlohmann::json& convert_cfg) {
     return false;
 }
 
-bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
+bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
+                                   size_t                uniq_num) {
     auto input_files_cfg = transactions_cfg.find("files");
     if (input_files_cfg == transactions_cfg.end()) {
         my_log::Logger::warning("analyzer",
@@ -459,8 +460,9 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
                         settings.ignore_intervals_without_target_tier));
         real_alg->set_tier_settings(settings);
         alg = real_alg;
-        type += fmt::format("_t{}_i{}", settings.target_tier,
-                            settings.ignore_intervals_without_target_tier);
+        type +=
+            fmt::format("_t{}_i{}", settings.target_tier,
+                        settings.ignore_intervals_without_target_tier ? 1 : 0);
     } else {
         my_log::Logger::warning(
             "analyzer",
@@ -502,7 +504,8 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
                                      filenames.size()));
 
     std::string output_filename =
-        fmt::format("{}/{}_{}_tran.{}", analisys_folder_, 1, type, "json");
+        fmt::format("{}/{}{}_{}_tran.{}", analisys_folder_,
+                    my_log::Logger::time(), uniq_num, type, "json");
     bool rv = true;
     if (!write_case(new_case, output_filename)) {
         rv = false;
