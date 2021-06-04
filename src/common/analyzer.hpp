@@ -1,14 +1,18 @@
 #pragma once
 
+#include <filesystem>
 #include <functional>
 #include <nlohmann/nlohmann.hpp>
 #include <string>
+#include <vector>
 
 #include "mc_entities.hpp"
 #include "rec_entry.hpp"
 #include "rec_template.hpp"
 
 enum class FILE_EXTENSION { UNKNOWN = 0, ETF = 1, EAF = 2, JSON = 3, CSV = 4 };
+
+namespace fs = std::filesystem;
 
 class Analyzer {
 public:
@@ -25,7 +29,8 @@ public:
     bool process_rules(const nlohmann::json& rules_cfg);
     bool process_clusterings(const nlohmann::json& clustering_cfg);
 
-    static FILE_EXTENSION file_extension(const std::string& filename);
+    static FILE_EXTENSION        file_extension(const std::string& filename);
+    static std::vector<fs::path> find_files(const std::string& filename);
 
     std::optional<rec::rec_template_t> read_rec_template(
         const std::string& filename);

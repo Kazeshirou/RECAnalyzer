@@ -20,7 +20,7 @@
                 "тексе_цель_аннотация1"
             ],
             "files": [
-                "corpus/f*.eaf"
+                "src/tests/.*.eaf"
             ]
         },
         {
@@ -51,7 +51,7 @@
                 "тексе_цель_аннотация1"
             ],
             "files": [
-                "corpus/a*.eaf"
+                "src/tests/.*.eaf"
             ]
         },
         {
@@ -65,7 +65,7 @@
                 "тексе_цель_аннотация1"
             ],
             "files": [
-                "corpus/b*.eaf"
+                "src/tests/rec/eaf/test.eaf"
             ]
         }
     ],

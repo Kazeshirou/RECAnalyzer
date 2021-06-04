@@ -2,21 +2,21 @@
 
 #include <fmt/format.h>
 #include <exception>
-#include <filesystem>
 #include <fstream>
 #include <regex>
 
 #include "eaf_parser.hpp"
 #include "etf_parser.hpp"
 #include "logger.hpp"
+#include "mc_by_time_slots_mining.hpp"
 #include "mc_entities_binary_file.hpp"
 #include "mc_entities_json_file.hpp"
+#include "mc_target_tier_mining.hpp"
+#include "mc_window_mining.hpp"
 #include "rec_entry_binary_file.hpp"
 #include "rec_entry_json_file.hpp"
 #include "rec_template_binary_file.hpp"
 #include "rec_template_json_file.hpp"
-
-namespace fs = std::filesystem;
 
 bool Analyzer::run(const std::string& cfg_filename) {
     std::ifstream cfg_file(cfg_filename);
@@ -339,8 +339,43 @@ bool Analyzer::process_convert(const nlohmann::json& convert_cfg) {
     return false;
 }
 
-bool Analyzer::process_transaction(
-    [[maybe_unused]] const nlohmann::json& transactions_cfg) {
+bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg) {
+    auto input_files_cfg = transactions_cfg.find("files");
+    if (input_files_cfg == transactions_cfg.end()) {
+        my_log::Logger::warning("analyzer",
+                                "Не указаны исходные файлы (поле files)");
+        return false;
+    }
+
+    std::vector<fs::path> filenames;
+    for (const auto& file : *input_files_cfg) {
+        auto curr_files_path = file.get<std::string>();
+        auto files           = find_files(curr_files_path);
+        if (!files.size()) {
+            my_log::Logger::warning(
+                "analyzer", fmt::format("Не было найдено ни одного файла "
+                                        "соответствующего {}",
+                                        curr_files_path));
+            continue;
+        }
+
+        my_log::Logger::info("analyzer",
+                             fmt::format("Было найдено {} файлов "
+                                         "соответствующих {}:",
+                                         files.size(), curr_files_path));
+        for (const auto& filename : files) {
+            my_log::Logger::info("analyzer",
+                                 fmt::format("    {}", filename.string()));
+        }
+        filenames.insert(filenames.end(), files.begin(), files.end());
+    }
+
+
+    if (!filenames.size()) {
+        my_log::Logger::warning("analyzer",
+                                "Не было найдено ни одного входного файла");
+        return false;
+    }
     return true;
 }
 
@@ -612,4 +647,37 @@ bool Analyzer::write_case(const mc::case_t&  clusters,
             return true;
         }
     }
+}
+
+std::vector<fs::path> Analyzer::find_files(const std::string& filename) {
+    std::vector<fs::path> rv;
+    try {
+        fs::path   path(filename);
+        std::regex filename_regex(path.filename().string());
+
+        using iterator = fs::recursive_directory_iterator;
+        const iterator end;
+        for (iterator iter{path.remove_filename()}; iter != end; ++iter) {
+            const std::string current_filename =
+                iter->path().filename().string();
+            if (fs::is_regular_file(*iter) &&
+                std::regex_match(current_filename, filename_regex)) {
+                rv.push_back(*iter);
+            }
+        }
+    } catch (const fs::filesystem_error& err) {
+        my_log::Logger::warning(
+            "analyzer",
+            fmt::format("Не удалось открыть директорию для поиска файлов: {}",
+                        filename));
+    } catch (const std::regex_error& err) {
+        my_log::Logger::warning(
+            "analyzer", fmt::format("Не правильно составлено регулярное "
+                                    "выражения для поиска файлов: {}",
+                                    filename));
+    } catch (const std::exception& err) {
+        my_log::Logger::warning(
+            "analyzer", fmt::format("Неожиданная ошибка: {}", err.what()));
+    }
+    return rv;
 }
