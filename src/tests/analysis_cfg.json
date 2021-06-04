@@ -12,7 +12,7 @@
     "transactions": [
         {
             "type": "time_slots",
-            "output_file_type": "json",
+            "output_file_extension": "json",
             "exclude_tiers": [
                 "слой1"
             ],
@@ -27,21 +27,18 @@
             "type": "window",
             "size": 100,
             "step_multiplier": 0.5,
-            "output_file_type": "csv",
+            "output_file_extension": "csv",
             "tiers_settings": [
                 {
-                    "tier": "tier1",
-                    "mode": {
-                        "type": "any"
-                    }
+                    "name": "tier1",
+                    "mode": "part",
+                    "value": 0.2
                 }
             ],
             "annotations_settings": [
                 {
-                    "annotation": "tier1",
-                    "mode": {
-                        "type": "any"
-                    }
+                    "name": "ann1",
+                    "mode": "any"
                 }
             ],
             "exclude_tiers": [
@@ -57,7 +54,7 @@
         {
             "type": "target_tier",
             "target_tier": "рот",
-            "output_file_type": "binary",
+            "output_file_extension": "bin",
             "exclude_tiers": [
                 "слой1"
             ],
@@ -71,7 +68,7 @@
     ],
     "sets": [
         {
-            "output_file_type": "binary",
+            "output_file_extension": "bin",
             "transactions_files": [
                 "file1",
                 "file2"
@@ -88,7 +85,7 @@
     ],
     "rules": [
         {
-            "output_file_type": "binary",
+            "output_file_extension": "bin",
             "sets_files": [
                 "file1",
                 "file2"
@@ -107,7 +104,7 @@
     ],
     "clustering": [
         {
-            "output_file_type": "binary",
+            "output_file_extension": "bin",
             "exclude_tiers": [
                 "слой1"
             ],

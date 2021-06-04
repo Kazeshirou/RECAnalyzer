@@ -371,7 +371,6 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
         filenames.insert(filenames.end(), files.begin(), files.end());
     }
 
-
     if (!filenames.size()) {
         my_log::Logger::warning("analyzer",
                                 "Не было найдено ни одного входного файла");
@@ -503,9 +502,18 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
                          fmt::format("Успешно обработано файлов {}/{}", success,
                                      filenames.size()));
 
+    std::string ext = "json";
+    if (auto ext_json = transactions_cfg.find("output_file_extension");
+        ext_json != transactions_cfg.end()) {
+        ext = ext_json.value().get<std::string>();
+        if (!ext.size()) {
+            ext = "bin";
+        }
+    }
+
     std::string output_filename =
         fmt::format("{}/{}{}_{}_tran.{}", analisys_folder_,
-                    my_log::Logger::time(), uniq_num, type, "json");
+                    my_log::Logger::time(), uniq_num, type, ext);
     bool rv = true;
     if (!write_case(new_case, output_filename)) {
         rv = false;
