@@ -1,7 +1,6 @@
 {
     "target_folder": "bin/",
     "name": "test_analysis",
-    "rec_template": "src/tests/rec/etf/test.etf",
     "convert": [
         {
             "type": "rec_template",
@@ -9,6 +8,13 @@
             "to": "bin/test_etf.json"
         }
     ],
+    "rec_template": {
+        "base_rec_template": "src/tests/rec/etf/test.etf",
+        "files": [
+            "src/tests/.*.eaf"
+        ],
+        "output_file_extension": "json"
+    },
     "transactions": [
         {
             "type": "time_slots",

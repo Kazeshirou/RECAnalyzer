@@ -22,7 +22,7 @@ public:
         progress_update_handler_ = progress_update_handler;
     }
 
-    bool process_rec_template(const std::string& filename);
+    bool process_rec_template(const nlohmann::json& rec_template_cfg);
     bool process_converts(const nlohmann::json& convert_cfg);
     bool process_transactions(const nlohmann::json& transactions_cfg);
     bool process_sets(const nlohmann::json& sets_cfg);
@@ -57,6 +57,9 @@ protected:
             progress_update_handler_.value()(current_progress);
         }
     }
+
+    std::string process_output_file_extension(const nlohmann::json& cfg);
+    std::vector<fs::path> process_files(const nlohmann::json& cfg);
 
 private:
     std::optional<std::function<void(double)>> progress_update_handler_;

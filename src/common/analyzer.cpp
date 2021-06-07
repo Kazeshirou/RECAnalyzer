@@ -91,11 +91,7 @@ bool Analyzer::run(const std::string& cfg_filename) {
         my_log::Logger::warning("analyzer",
                                 "Не удалось считать поле rec_template");
     } else {
-        my_log::Logger::info(
-            "analyzer",
-            fmt::format("Считан путь до файла шаблона разметки {}",
-                        rec_template_cfg.value().get<std::string>()));
-        process_rec_template(rec_template_cfg.value().get<std::string>());
+        process_rec_template(*rec_template_cfg);
     }
 
     if (auto transactions_cfg = cfg.find("transactions");
@@ -129,14 +125,64 @@ bool Analyzer::run(const std::string& cfg_filename) {
     return true;
 }
 
-bool Analyzer::process_rec_template(const std::string& filename) {
-    auto rec_template_opt = read_rec_template(filename);
-    if (rec_template_opt.has_value()) {
-        rec_template_ = rec_template_opt.value();
-        return true;
+bool Analyzer::process_rec_template(const nlohmann::json& rec_template_cfg) {
+    if (auto base_json = rec_template_cfg.find("base_rec_template");
+        base_json != rec_template_cfg.end()) {
+        auto base             = base_json.value().get<std::string>();
+        auto rec_template_opt = read_rec_template(base);
+        if (rec_template_opt.has_value()) {
+            rec_template_ = rec_template_opt.value();
+            my_log::Logger::info(
+                "analyzer",
+                fmt::format("Считан базовый шаблон разметки {}", base));
+        } else {
+            my_log::Logger::info(
+                "analyzer",
+                fmt::format("Не удалось считать базовый шаблон разметки {}",
+                            base));
+            return false;
+        }
+    } else {
+        my_log::Logger::info("analyzer", "Базовый шаблон разметки не указан");
+        rec_template_ = rec::rec_template_t{};
     }
 
-    return false;
+    std::string ext = process_output_file_extension(rec_template_cfg);
+
+    std::vector<fs::path> filenames = process_files(rec_template_cfg);
+    if (!filenames.size()) {
+        my_log::Logger::info(
+            "analyzer", "Не найдено файлов разметки для расширения шаблона");
+    } else {
+        size_t success{0};
+        for (const auto& filename : filenames) {
+            auto rec_entry_opt = read_rec_entry(filename.string());
+            if (!rec_entry_opt.has_value()) {
+                my_log::Logger::warning(
+                    "analyzer",
+                    fmt::format("Не удалось распарсить файл разметки: {}",
+                                filename.string()));
+                continue;
+            }
+            ++success;
+        }
+        my_log::Logger::info(
+            "analyzer", fmt::format("Удалось распарсить файлы разметки: {}/{}",
+                                    success, filenames.size()));
+    }
+
+    std::string output_filename = fmt::format(
+        "{}/{}_rec_template.{}", analisys_folder_, my_log::Logger::time(), ext);
+    bool rv = true;
+    if (!write_rec_template(rec_template_, output_filename)) {
+        rv = false;
+    } else {
+        my_log::Logger::info(
+            "analyzer",
+            fmt::format("Шаблон разметки записан в {}", output_filename));
+    }
+
+    return rv;
 }
 
 
@@ -341,35 +387,7 @@ bool Analyzer::process_convert(const nlohmann::json& convert_cfg) {
 
 bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
                                    size_t                uniq_num) {
-    auto input_files_cfg = transactions_cfg.find("files");
-    if (input_files_cfg == transactions_cfg.end()) {
-        my_log::Logger::warning("analyzer",
-                                "Не указаны исходные файлы (поле files)");
-        return false;
-    }
-
-    std::vector<fs::path> filenames;
-    for (const auto& file : *input_files_cfg) {
-        auto curr_files_path = file.get<std::string>();
-        auto files           = find_files(curr_files_path);
-        if (!files.size()) {
-            my_log::Logger::warning(
-                "analyzer", fmt::format("Не было найдено ни одного файла "
-                                        "соответствующего {}",
-                                        curr_files_path));
-            continue;
-        }
-
-        my_log::Logger::info("analyzer",
-                             fmt::format("Было найдено {} файлов "
-                                         "соответствующих {}:",
-                                         files.size(), curr_files_path));
-        for (const auto& filename : files) {
-            my_log::Logger::info("analyzer",
-                                 fmt::format("    {}", filename.string()));
-        }
-        filenames.insert(filenames.end(), files.begin(), files.end());
-    }
+    std::vector<fs::path> filenames = process_files(transactions_cfg);
 
     if (!filenames.size()) {
         my_log::Logger::warning("analyzer",
@@ -502,14 +520,7 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
                          fmt::format("Успешно обработано файлов {}/{}", success,
                                      filenames.size()));
 
-    std::string ext = "json";
-    if (auto ext_json = transactions_cfg.find("output_file_extension");
-        ext_json != transactions_cfg.end()) {
-        ext = ext_json.value().get<std::string>();
-        if (!ext.size()) {
-            ext = "bin";
-        }
-    }
+    std::string ext = process_output_file_extension(transactions_cfg);
 
     std::string output_filename =
         fmt::format("{}/{}{}_{}_tran.{}", analisys_folder_,
@@ -829,4 +840,50 @@ std::vector<fs::path> Analyzer::find_files(const std::string& filename) {
             "analyzer", fmt::format("Неожиданная ошибка: {}", err.what()));
     }
     return rv;
+}
+
+std::string Analyzer::process_output_file_extension(const nlohmann::json& cfg) {
+    std::string ext = "json";
+    if (auto ext_json = cfg.find("output_file_extension");
+        ext_json != cfg.end()) {
+        ext = ext_json.value().get<std::string>();
+        if (!ext.size()) {
+            ext = "bin";
+        }
+    }
+    return ext;
+}
+
+std::vector<fs::path> Analyzer::process_files(const nlohmann::json& cfg) {
+    std::vector<fs::path> filenames;
+    auto                  input_files_cfg = cfg.find("files");
+    if (input_files_cfg == cfg.end()) {
+        my_log::Logger::warning("analyzer",
+                                "Не указаны исходные файлы (поле files)");
+        return filenames;
+    }
+
+    for (const auto& file : *input_files_cfg) {
+        auto curr_files_path = file.get<std::string>();
+        auto files           = find_files(curr_files_path);
+        if (!files.size()) {
+            my_log::Logger::warning(
+                "analyzer", fmt::format("Не было найдено ни одного файла "
+                                        "соответствующего {}",
+                                        curr_files_path));
+            continue;
+        }
+
+        my_log::Logger::info("analyzer",
+                             fmt::format("Было найдено {} файлов "
+                                         "соответствующих {}:",
+                                         files.size(), curr_files_path));
+        for (const auto& filename : files) {
+            my_log::Logger::info("analyzer",
+                                 fmt::format("    {}", filename.string()));
+        }
+        filenames.insert(filenames.end(), files.begin(), files.end());
+    }
+
+    return filenames;
 }
