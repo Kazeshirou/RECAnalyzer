@@ -19,12 +19,6 @@
         {
             "type": "time_slots",
             "output_file_extension": "json",
-            "exclude_tiers": [
-                "слой1"
-            ],
-            "exclude_annotations": [
-                "тексе_цель_аннотация1"
-            ],
             "files": [
                 "src/tests/.*.eaf"
             ]
@@ -47,12 +41,6 @@
                     "mode": "any"
                 }
             ],
-            "exclude_tiers": [
-                "слой1"
-            ],
-            "exclude_annotations": [
-                "тексе_цель_аннотация1"
-            ],
             "files": [
                 "src/tests/.*.eaf"
             ]
@@ -61,12 +49,6 @@
             "type": "target_tier",
             "target_tier": "рот",
             "output_file_extension": "bin",
-            "exclude_tiers": [
-                "слой1"
-            ],
-            "exclude_annotations": [
-                "тексе_цель_аннотация1"
-            ],
             "files": [
                 "src/tests/rec/eaf/test.eaf"
             ]
@@ -79,11 +61,11 @@
                 "file1",
                 "file2"
             ],
-            "exclude_tiers": [
-                "слой1"
+            "ignore_tiers": [
+                "tid2"
             ],
-            "exclude_annotations": [
-                "тексе_цель_аннотация1"
+            "ignore_annotations": [
+                "tid2_cv1_0"
             ],
             "min_support": 0.0,
             "max_support": 0.99
@@ -96,10 +78,10 @@
                 "file1",
                 "file2"
             ],
-            "exclude_tiers": [
+            "ignore_tiers": [
                 "слой1"
             ],
-            "exclude_annotations": [
+            "ignore_annotations": [
                 "тексе_цель_аннотация1"
             ],
             "min_support": 0.0,
@@ -111,10 +93,10 @@
     "clustering": [
         {
             "output_file_extension": "bin",
-            "exclude_tiers": [
+            "ignore_tiers": [
                 "слой1"
             ],
-            "exclude_annotations": [
+            "ignore_annotations": [
                 "тексе_цель_аннотация1"
             ],
             "input_files": [

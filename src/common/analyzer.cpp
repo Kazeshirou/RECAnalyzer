@@ -1039,3 +1039,53 @@ std::optional<
         "analyzer", fmt::format("Не указан тип вхождения для {}", name));
     return {};
 }
+
+mc::entry_t Analyzer::process_ignore(const nlohmann::json& cfg) {
+    mc::entry_t rv(rec_template_.annotations.size());
+    if (auto ignore_tiers = cfg.find("ignore_tiers");
+        ignore_tiers != cfg.end()) {
+        for (const auto& tier_json : *ignore_tiers) {
+            auto tier = tier_json.get<std::string>();
+            if (!rec_template_.tiers_map.count(tier)) {
+                my_log::Logger::warning(
+                    "analyzer",
+                    fmt::format(
+                        "Неизвестный слой для исключения из анализа: {}",
+                        tier));
+                continue;
+            }
+            size_t tier_id = rec_template_.tiers_map[tier];
+            for (size_t i{0}; i < rec_template_.annotations.size(); i++) {
+                if (rec_template_.annotations[i].tier != tier_id) {
+                    continue;
+                }
+                rv.set_bit(i);
+                my_log::Logger::info(
+                    "analyzer",
+                    fmt::format("Исключена из анализа {}_{}", tier,
+                                rec_template_.annotations[i].value));
+            }
+        }
+    }
+
+    if (auto ignore_annotations = cfg.find("ignore_annotations");
+        ignore_annotations != cfg.end()) {
+        for (const auto& ann_json : *ignore_annotations) {
+            auto ann = ann_json.get<std::string>();
+            if (!rec_template_.annotations_map.count(ann)) {
+                my_log::Logger::warning(
+                    "analyzer",
+                    fmt::format(
+                        "Неизвестная аннотация для исключения из анализа: {}",
+                        ann));
+                continue;
+            }
+            rv.set_bit(rec_template_.annotations_map[ann]);
+            my_log::Logger::info("analyzer",
+                                 fmt::format("Исключена из анализа {}", ann));
+        }
+    }
+
+
+    return rv;
+}

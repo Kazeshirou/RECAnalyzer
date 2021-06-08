@@ -66,7 +66,9 @@ protected:
                          mc::transaction::algorithm::transaction_mining_settings_t& settings);
     std::optional<std::pair<std::string,
                             mc::transaction::algorithm::annotation_settings_t>>
-        process_annotation_settings(const nlohmann ::json& cfg);
+        process_annotation_settings(const nlohmann::json& cfg);
+
+    mc::entry_t process_ignore(const nlohmann::json& cfg);
 
 private:
     std::optional<std::function<void(double)>> progress_update_handler_;
