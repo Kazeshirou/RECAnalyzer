@@ -36,14 +36,14 @@
             "output_file_extension": "csv",
             "tiers_settings": [
                 {
-                    "name": "tier1",
+                    "name": "tid1",
                     "mode": "part",
                     "value": 0.2
                 }
             ],
             "annotations_settings": [
                 {
-                    "name": "ann1",
+                    "name": "tid1_cv1_0",
                     "mode": "any"
                 }
             ],

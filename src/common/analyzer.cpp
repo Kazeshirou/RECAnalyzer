@@ -487,6 +487,11 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
         return false;
     }
 
+    mc::transaction::algorithm::transaction_mining_settings_t settings;
+    settings.annotation_settings.resize(rec_template_.annotations.size());
+    process_mining_settings(transactions_cfg, settings);
+    alg->set_settings(settings);
+
     mc::case_t new_case;
     size_t     success{0};
     for (const auto& filename : filenames) {
@@ -886,4 +891,151 @@ std::vector<fs::path> Analyzer::process_files(const nlohmann::json& cfg) {
     }
 
     return filenames;
+}
+
+void Analyzer::process_mining_settings(
+    const nlohmann ::json&                                     cfg,
+    mc::transaction::algorithm::transaction_mining_settings_t& settings) {
+    if (auto tiers_json = cfg.find("tiers_settings"); tiers_json != cfg.end()) {
+        for (const auto& tier : *tiers_json) {
+            auto cur_settings_opt = process_annotation_settings(tier);
+            if (!cur_settings_opt.has_value()) {
+                continue;
+            }
+            auto cur_settings = cur_settings_opt.value();
+            if (!rec_template_.tiers_map.count(cur_settings.first)) {
+                my_log::Logger::warning(
+                    "analyzer", fmt::format("Настройка для неизвестного слоя "
+                                            "{} будет проигнорирована",
+                                            cur_settings.first));
+                continue;
+            }
+            size_t      tier_id = rec_template_.tiers_map[cur_settings.first];
+            std::string mode    = "";
+            switch (cur_settings.second.type) {
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::ANY:
+                    mode = "any";
+                    break;
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::FULL:
+                    mode = "full";
+                    break;
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::PART:
+                    mode = "part";
+                    break;
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::MOMENT:
+                    mode = "moment";
+                    break;
+            }
+            for (size_t i{0}; i < rec_template_.annotations.size(); i++) {
+                if (rec_template_.annotations[i].tier != tier_id) {
+                    continue;
+                }
+                settings.annotation_settings[i] = cur_settings.second;
+                my_log::Logger::info(
+                    "analyzer",
+                    fmt::format(
+                        "Настройка вхождения {}_{}: mode = {}; value = {};",
+                        cur_settings.first, rec_template_.annotations[i].value,
+                        mode, cur_settings.second.value));
+            }
+        }
+    }
+    if (auto ann_json = cfg.find("annotations_settings");
+        ann_json != cfg.end()) {
+        for (const auto& ann : *ann_json) {
+            auto cur_settings_opt = process_annotation_settings(ann);
+            if (!cur_settings_opt.has_value()) {
+                continue;
+            }
+            auto cur_settings = cur_settings_opt.value();
+            if (!rec_template_.annotations_map.count(cur_settings.first)) {
+                my_log::Logger::warning(
+                    "analyzer",
+                    fmt::format("Настройка для неизвестной аннотации "
+                                "{} будет проигнорирована",
+                                cur_settings.first));
+                continue;
+            }
+            settings.annotation_settings
+                [rec_template_.annotations_map[cur_settings.first]] =
+                cur_settings.second;
+
+            std::string mode = "";
+            switch (cur_settings.second.type) {
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::ANY:
+                    mode = "any";
+                    break;
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::FULL:
+                    mode = "full";
+                    break;
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::PART:
+                    mode = "part";
+                    break;
+                case mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::MOMENT:
+                    mode = "moment";
+                    break;
+            }
+            my_log::Logger::info(
+                "analyzer",
+                fmt::format("Настройка вхождения {}: mode = {}; value = {};",
+                            cur_settings.first, mode,
+                            cur_settings.second.value));
+        }
+    }
+}
+
+
+std::optional<
+    std::pair<std::string, mc::transaction::algorithm::annotation_settings_t>>
+    Analyzer::process_annotation_settings(const nlohmann ::json& cfg) {
+    mc::transaction::algorithm::annotation_settings_t rv;
+
+    std::string name;
+    if (auto name_json = cfg.find("name"); name_json == cfg.end()) {
+        my_log::Logger::warning("analyzer",
+                                "Не указано название слоя/аннотации настройки");
+        return {};
+    } else {
+        name = name_json->get<std::string>();
+    }
+
+    if (auto mode_json = cfg.find("mode"); mode_json != cfg.end()) {
+        auto mode = mode_json->get<std::string>();
+        if (mode == "any") {
+            return std::make_pair(name, rv);
+        }
+        if (mode == "full") {
+            rv.type = mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::FULL;
+            return std::make_pair(name, rv);
+        }
+
+        if (mode == "part") {
+            rv.type = mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::PART;
+        } else if (mode == "moment") {
+            rv.type = mc::transaction::algorithm::ANNOTATION_ENTRY_TYPE::MOMENT;
+
+        } else {
+            my_log::Logger::warning(
+                "analyzer",
+                fmt::format("Указан неизвестный тип вхождения для {}: {}", name,
+                            mode));
+            return {};
+        }
+
+        auto value_json = cfg.find("value");
+        if (value_json == cfg.end()) {
+            my_log::Logger::warning(
+                "analyzer",
+                fmt::format("Не указан параметр для типа вхождения {} для {}",
+                            name, mode));
+            return {};
+        }
+
+
+        return std::make_pair(name, rv);
+    }
+
+    my_log::Logger::warning(
+        "analyzer", fmt::format("Не указан тип вхождения для {}", name));
+    return {};
 }

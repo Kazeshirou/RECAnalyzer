@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "mc_entities.hpp"
+#include "mc_transaction_mining_interface.hpp"
 #include "rec_entry.hpp"
 #include "rec_template.hpp"
 
@@ -60,6 +61,12 @@ protected:
 
     std::string process_output_file_extension(const nlohmann::json& cfg);
     std::vector<fs::path> process_files(const nlohmann::json& cfg);
+    void                  process_mining_settings(
+                         const nlohmann ::json&                                     cfg,
+                         mc::transaction::algorithm::transaction_mining_settings_t& settings);
+    std::optional<std::pair<std::string,
+                            mc::transaction::algorithm::annotation_settings_t>>
+        process_annotation_settings(const nlohmann ::json& cfg);
 
 private:
     std::optional<std::function<void(double)>> progress_update_handler_;
