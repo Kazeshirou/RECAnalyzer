@@ -70,25 +70,16 @@ struct rule_t : public set_t {
 };
 
 struct transaction_t : public entry_t {
-    transaction_t(const Bit_mask& mask, rec::rec_entry_t& new_rec_entry,
-                  size_t new_ts1, size_t new_ts2)
-            : entry_t(mask),
-              rec_entry{new_rec_entry},
-              ts1{new_ts1},
-              ts2{new_ts2} {}
+    transaction_t(const Bit_mask& mask, size_t new_ts1, size_t new_ts2)
+            : entry_t(mask), ts1{new_ts1}, ts2{new_ts2} {}
 
-    transaction_t(rec::rec_entry_t& new_rec_entry, size_t new_ts1,
-                  size_t new_ts2)
-            : entry_t(new_rec_entry.rec_template.annotations.size()),
-              rec_entry{new_rec_entry},
-              ts1{new_ts1},
-              ts2{new_ts2} {}
+    transaction_t(size_t new_ts1, size_t new_ts2)
+            : ts1{new_ts1}, ts2{new_ts2} {}
 
     ENTRY_TYPE get_type() const override {
         return type;
     }
 
-    rec::rec_entry_t&           rec_entry;
     size_t                      ts1;
     size_t                      ts2;
     static constexpr ENTRY_TYPE type{ENTRY_TYPE::TRANSACTION};

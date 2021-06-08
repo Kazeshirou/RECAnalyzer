@@ -16,7 +16,7 @@ case_t Window_mining::run(rec::rec_entry_t& rec_entry) const {
     size_t t1 = 0;
     size_t t2 = t1 + window_settings_.size;
     while (t1 < rec_entry.time_slots[rec_entry.time_slots.size() - 1].value) {
-        auto transaction = new transaction_t{rec_entry, t1, t2};
+        auto transaction = new transaction_t{t1, t2};
         for (const auto& event : rec_entry.annotations) {
             if (rec_entry.time_slots[event.ts1].value >= transaction->ts2) {
                 break;
