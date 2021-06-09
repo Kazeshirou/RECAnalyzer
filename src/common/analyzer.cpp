@@ -514,10 +514,10 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
         ++success;
         new_case.insert(new_case.end(), current_case.begin(),
                         current_case.end());
-        current_case.clear();
         my_log::Logger::info(
             "analyzer", fmt::format("Из {} выделено {} транзакций",
                                     filename.string(), current_case.size()));
+        current_case.clear();
     }
     my_log::Logger::info("analyzer", fmt::format("Всего выделено {} транзакций",
                                                  new_case.size()));
