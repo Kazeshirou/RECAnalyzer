@@ -173,6 +173,11 @@ bool Analyzer::process_rec_template(const nlohmann::json& rec_template_cfg) {
                                     success, filenames.size()));
     }
 
+    my_log::Logger::info(
+        "analyzer", fmt::format("В шаблоне слоёв {} и уникальных аннотаций {}",
+                                rec_template_.tiers.size(),
+                                rec_template_.annotations.size()));
+
     std::string output_filename = fmt::format(
         "{}/{}_rec_template.{}", analisys_folder_, my_log::Logger::time(), ext);
     bool rv = true;
