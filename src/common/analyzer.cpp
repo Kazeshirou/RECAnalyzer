@@ -629,8 +629,94 @@ bool Analyzer::process_set(const nlohmann::json& sets_cfg) {
     return rv;
 }
 
-bool Analyzer::process_rule([[maybe_unused]] const nlohmann::json& rules_cfg) {
-    return true;
+bool Analyzer::process_rule(const nlohmann::json& rules_cfg) {
+    std::vector<fs::path> filenames = process_files(rules_cfg);
+
+    if (!filenames.size()) {
+        my_log::Logger::warning("analyzer",
+                                "Не было найдено ни одного входного файла");
+        return false;
+    }
+
+    mc::case_t new_case;
+    for (const auto& filename : filenames) {
+        auto cur_case_opt = read_case(filename.string());
+        if (!cur_case_opt.has_value()) {
+            my_log::Logger::warning(
+                "analyzer",
+                fmt::format("Не удалось считать {}", filename.string()));
+            continue;
+        }
+        auto& cur_case = cur_case_opt.value();
+        my_log::Logger::info("analyzer",
+                             fmt::format("Из {} считано {} наборов",
+                                         filename.string(), cur_case.size()));
+
+        if (cur_case.size()) {
+            new_case.insert(new_case.end(), cur_case.begin(), cur_case.end());
+        }
+        cur_case.clear();
+    }
+
+    my_log::Logger::info(
+        "analyzer", fmt::format("Всего считано {} наборов", new_case.size()));
+
+
+    mc::assotiation_mining::algorithm::apriori_settings_t settings;
+    if (rules_cfg.contains("min_support")) {
+        settings.min_support = rules_cfg["min_support"].get<double>();
+    }
+    if (rules_cfg.contains("max_support")) {
+        settings.max_support = rules_cfg["max_support"].get<double>();
+    }
+    if (rules_cfg.contains("min_confidence")) {
+        settings.min_confidence = rules_cfg["min_confidence"].get<double>();
+    }
+    if (rules_cfg.contains("max_confidence")) {
+        settings.max_confidence = rules_cfg["max_confidence"].get<double>();
+    }
+
+    my_log::Logger::info(
+        "analyzer",
+        fmt::format("Настройки выделения правил: min_support = {}; max_support "
+                    "= {}, min_confidence = {}; max_confidence = {}",
+                    settings.min_support, settings.max_support,
+                    settings.min_confidence, settings.max_confidence));
+
+
+    auto ignore = process_ignore(rules_cfg);
+
+    for (Bit_mask* set : new_case) {
+        (*set) &= ignore;
+    }
+
+    new_case.sort();
+    auto rules =
+        mc::assotiation_mining::algorithm::apriori_rules(settings, new_case);
+
+    if (!rules.size()) {
+        my_log::Logger::warning("analyzer",
+                                "Не удалось выделить ни одного правила");
+        return true;
+    }
+
+    my_log::Logger::info("analyzer",
+                         fmt::format("Выделено {} правил", rules.size()));
+
+    std::string ext = process_output_file_extension(rules_cfg);
+
+    std::string output_filename = fmt::format("{}/{}_rule.{}", analisys_folder_,
+                                              my_log::Logger::time(), ext);
+    bool        rv              = true;
+    if (!write_case(rules, output_filename)) {
+        rv = false;
+    } else {
+        my_log::Logger::info(
+            "analyzer",
+            fmt::format("Выделенные правила записаны в {}", output_filename));
+    }
+
+    return rv;
 }
 
 bool Analyzer::process_clustering(

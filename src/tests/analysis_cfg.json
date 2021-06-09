@@ -74,8 +74,7 @@
         {
             "output_file_extension": "json",
             "files": [
-                "file1",
-                "file2"
+                "bin/test_analysis/.*_set\\..*"
             ],
             "ignore_tiers": [
                 "слой1"
