@@ -56,10 +56,9 @@
     ],
     "sets": [
         {
-            "output_file_extension": "bin",
-            "transactions_files": [
-                "file1",
-                "file2"
+            "output_file_extension": "json",
+            "files": [
+                "bin/test_analysis/.*_tran\\..*"
             ],
             "ignore_tiers": [
                 "tid2"
@@ -68,13 +67,13 @@
                 "tid2_cv1_0"
             ],
             "min_support": 0.0,
-            "max_support": 0.99
+            "max_support": 0.98
         }
     ],
     "rules": [
         {
-            "output_file_extension": "bin",
-            "sets_files": [
+            "output_file_extension": "json",
+            "files": [
                 "file1",
                 "file2"
             ],
@@ -92,14 +91,14 @@
     ],
     "clustering": [
         {
-            "output_file_extension": "bin",
+            "output_file_extension": "json",
             "ignore_tiers": [
                 "слой1"
             ],
             "ignore_annotations": [
                 "тексе_цель_аннотация1"
             ],
-            "input_files": [
+            "files": [
                 "file1",
                 "file2",
                 "file3"

@@ -5,6 +5,8 @@
 #include <fstream>
 #include <regex>
 
+#include "apriori.hpp"
+#include "clope.hpp"
 #include "eaf_parser.hpp"
 #include "etf_parser.hpp"
 #include "logger.hpp"
@@ -543,8 +545,88 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
     return rv;
 }
 
-bool Analyzer::process_set([[maybe_unused]] const nlohmann::json& sets_cfg) {
-    return true;
+bool Analyzer::process_set(const nlohmann::json& sets_cfg) {
+    std::vector<fs::path> filenames = process_files(sets_cfg);
+
+    if (!filenames.size()) {
+        my_log::Logger::warning("analyzer",
+                                "Не было найдено ни одного входного файла");
+        return false;
+    }
+
+    mc::case_t new_case;
+    for (const auto& filename : filenames) {
+        auto cur_case_opt = read_case(filename.string());
+        if (!cur_case_opt.has_value()) {
+            my_log::Logger::warning(
+                "analyzer",
+                fmt::format("Не удалось считать {}", filename.string()));
+            continue;
+        }
+        auto& cur_case = cur_case_opt.value();
+        my_log::Logger::info("analyzer",
+                             fmt::format("Из {} считано {} транзакций",
+                                         filename.string(), cur_case.size()));
+
+        if (cur_case.size()) {
+            new_case.insert(new_case.end(), cur_case.begin(), cur_case.end());
+        }
+        cur_case.clear();
+    }
+
+    my_log::Logger::info("analyzer", fmt::format("Всего считано {} транзакций",
+                                                 new_case.size()));
+
+
+    mc::assotiation_mining::algorithm::apriori_settings_t settings;
+    if (sets_cfg.contains("min_support")) {
+        settings.min_support = sets_cfg["min_support"].get<double>();
+    }
+    if (sets_cfg.contains("max_support")) {
+        settings.max_support = sets_cfg["max_support"].get<double>();
+    }
+
+    my_log::Logger::info(
+        "analyzer",
+        fmt::format(
+            "Настройки выделения наборов: min_support = {}; max_support = {}",
+            settings.min_support, settings.max_support));
+
+
+    auto ignore = process_ignore(sets_cfg);
+
+    for (Bit_mask* tran : new_case) {
+        (*tran) &= ignore;
+    }
+
+    auto sets =
+        mc::assotiation_mining::algorithm::apriori_sets(settings, new_case);
+
+    if (!sets.size()) {
+        my_log::Logger::warning(
+            "analyzer",
+            "Не удалось выделить ни одного часто встречающегося набора");
+        return true;
+    }
+
+    my_log::Logger::info("analyzer",
+                         fmt::format("Выделено {} наборов", sets.size()));
+
+    std::string ext = process_output_file_extension(sets_cfg);
+
+    std::string output_filename = fmt::format("{}/{}_set.{}", analisys_folder_,
+                                              my_log::Logger::time(), ext);
+    bool        rv              = true;
+    if (!write_case(sets, output_filename)) {
+        rv = false;
+    } else {
+        my_log::Logger::info(
+            "analyzer",
+            fmt::format("Выделенные часто встречающиеся наборы записаны в {}",
+                        output_filename));
+    }
+
+    return rv;
 }
 
 bool Analyzer::process_rule([[maybe_unused]] const nlohmann::json& rules_cfg) {
@@ -1086,6 +1168,7 @@ mc::entry_t Analyzer::process_ignore(const nlohmann::json& cfg) {
         }
     }
 
+    rv.invert();
 
     return rv;
 }
