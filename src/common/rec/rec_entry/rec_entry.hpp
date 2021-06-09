@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "eaf_data.hpp"
+#include "logger.hpp"
 #include "rec_template.hpp"
 
 namespace rec {
@@ -65,6 +66,15 @@ struct rec_entry_t {
     std::function<bool(const annotation_t&, const annotation_t&)>
         compare_annotations = [this](const annotation_t& first,
                                      const annotation_t& second) -> bool {
+        if ((first.ts1 >= time_slots.size()) ||
+            (first.ts2 >= time_slots.size()) ||
+            (second.ts1 >= time_slots.size()) ||
+            (second.ts2 >= time_slots.size())) {
+            my_log::Logger::warning("rec_entry",
+                                    "При сортировке аннотаций в сравнение "
+                                    "попала невалидная аннотация с битым ts");
+            return false;
+        }
         size_t ts11 = time_slots[first.ts1].value;
         size_t ts12 = time_slots[first.ts2].value;
         size_t ts21 = time_slots[second.ts1].value;
