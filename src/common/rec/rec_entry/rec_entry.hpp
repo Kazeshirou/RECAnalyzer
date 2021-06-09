@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fmt/format.h>
 #include <functional>
 #include <map>
 #include <optional>
@@ -70,9 +71,11 @@ struct rec_entry_t {
             (first.ts2 >= time_slots.size()) ||
             (second.ts1 >= time_slots.size()) ||
             (second.ts2 >= time_slots.size())) {
-            my_log::Logger::warning("rec_entry",
-                                    "При сортировке аннотаций в сравнение "
-                                    "попала невалидная аннотация с битым ts");
+            my_log::Logger::warning(
+                "rec::rec_entry_t",
+                fmt::format("{}: При сортировке аннотаций в сравнение "
+                            "попала невалидная аннотация с битым ts",
+                            filename));
             return false;
         }
         size_t ts11 = time_slots[first.ts1].value;
@@ -104,6 +107,9 @@ struct rec_entry_t {
     std::vector<annotation_t> annotations;
 
     std::map<std::string, size_t> time_slots_map;
+    std::map<std::string, size_t> annotation_id_map;
+
+    std::string filename;
 };
 
 }  // namespace rec

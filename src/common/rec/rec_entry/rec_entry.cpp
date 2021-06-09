@@ -18,25 +18,38 @@ rec_entry_t::rec_entry_t(rec_template_t&   rec_template_ref,
           date{eaf.annotation_document.date},
           format{eaf.annotation_document.format},
           version{eaf.annotation_document.version},
-          time_units{eaf.header.time_units} {
+          time_units{eaf.header.time_units},
+          filename{eaf.filename} {
     add_time_slots(eaf);
 
-    bool tiers_added{false};
     for (auto& [id, eaf_tier] : eaf.tiers) {
         if (!rec_template.tiers_map.count(id)) {
             add_tier(eaf, id, eaf_tier);
-            tiers_added = true;
         }
+    }
+    resolve_tier_parents(eaf);
 
+    for (auto& [id, eaf_tier] : eaf.tiers) {
         size_t current_tier_i = rec_template.tiers_map[id];
+        if (rec_template.tiers[current_tier_i].parent.has_value()) {
+            continue;
+        }
 
         for (auto& eaf_annotation : eaf_tier.annotations) {
             add_annotation(current_tier_i, eaf_annotation);
         }
     }
 
-    if (tiers_added) {
-        resolve_tier_parents(eaf);
+
+    for (auto& [id, eaf_tier] : eaf.tiers) {
+        size_t current_tier_i = rec_template.tiers_map[id];
+        if (!rec_template.tiers[current_tier_i].parent.has_value()) {
+            continue;
+        }
+
+        for (auto& eaf_annotation : eaf_tier.annotations) {
+            add_annotation(current_tier_i, eaf_annotation);
+        }
     }
 
     std::sort(annotations.begin(), annotations.end(), compare_annotations);
@@ -111,7 +124,7 @@ void rec_entry_t::add_tier(const eaf::eaf_t& eaf, const std::string& id,
     if (lt == eaf.linguistic_types.end()) {
         my_log::Logger::debug(
             "rec::rec_entry_t",
-            fmt::format("Tier {} without linguistic_type", id));
+            fmt::format("{}: Tier {} without linguistic_type", filename, id));
         return;
     }
 
@@ -167,24 +180,67 @@ void rec_entry_t::add_annotation(size_t                   current_tier_i,
 
     annotation_t annotation{rec_template.annotations_map[annotation_uniq_name],
                             0, 0};
-    if (!time_slots_map.count(eaf_annotation.ts1_ref)) {
-        my_log::Logger::debug(
-            "rec::rec_entry_t",
-            fmt::format("Annotation {} on tier {} without time_slot1_ref",
-                        eaf_annotation.value, current_tier.name));
-        return;
-    }
+    if (!eaf_annotation.is_ref) {
+        if (!time_slots_map.count(eaf_annotation.ts1_ref)) {
+            my_log::Logger::debug(
+                "rec::rec_entry_t",
+                fmt::format(
+                    "{}: Annotation {} on tier {} without time_slot1_ref",
+                    filename, eaf_annotation.value, current_tier.name));
+            return;
+        }
 
-    if (!time_slots_map.count(eaf_annotation.ts2_ref)) {
-        my_log::Logger::debug(
-            "rec::rec_entry_t",
-            fmt::format("Annotation {} on tier {} without time_slot2_ref",
-                        eaf_annotation.value, current_tier.name));
-        return;
-    }
+        if (!time_slots_map.count(eaf_annotation.ts2_ref)) {
+            my_log::Logger::debug(
+                "rec::rec_entry_t",
+                fmt::format(
+                    "{}: Annotation {} on tier {} without time_slot2_ref",
+                    filename, eaf_annotation.value, current_tier.name));
+            return;
+        }
 
-    annotation.ts1 = time_slots_map[eaf_annotation.ts1_ref];
-    annotation.ts2 = time_slots_map[eaf_annotation.ts2_ref];
+        annotation.ts1 = time_slots_map[eaf_annotation.ts1_ref];
+        annotation.ts2 = time_slots_map[eaf_annotation.ts2_ref];
+    } else {
+        if (!annotation_id_map.count(eaf_annotation.ref)) {
+            my_log::Logger::debug(
+                "rec::rec_entry_t",
+                fmt::format("{}:Ref annotation {} on tier {} refer to unknown "
+                            "annotation {}",
+                            filename, eaf_annotation.value, current_tier.name,
+                            eaf_annotation.ref));
+            return;
+        }
+
+        auto& ref_annotation =
+            annotations[annotation_id_map[eaf_annotation.ref]];
+        annotation.ts1 = ref_annotation.ts1;
+        annotation.ts2 = ref_annotation.ts2;
+
+        if (!current_tier.parent.has_value()) {
+            my_log::Logger::debug(
+                "rec::rec_entry_t",
+                fmt::format(
+                    "{}: Ref annotation {} on tier {} without parent tier",
+                    filename, eaf_annotation.value, current_tier.name));
+        } else if (current_tier.parent.value() !=
+                   rec_template.annotations[ref_annotation.annotation_id]
+                       .tier) {
+            my_log::Logger::debug(
+                "rec::rec_entry_t",
+                fmt::format(
+                    "{}: Ref annotation {} on tier {} parent tier {} not "
+                    "eq tier of refered annotation {}",
+                    filename,
+                    rec_template.tiers[current_tier.parent.value()].name,
+                    rec_template
+                        .tiers[rec_template
+                                   .annotations[ref_annotation.annotation_id]
+                                   .tier]
+                        .name));
+        }
+    }
+    annotation_id_map[eaf_annotation.id] = annotations.size();
     annotations.push_back(annotation);
 }
 
@@ -198,29 +254,33 @@ void rec_entry_t::resolve_tier_parents(const eaf::eaf_t& eaf) {
         if (tier_it == rec_template.tiers_map.end()) {
             my_log::Logger::warning(
                 "rec::rec_entry_t",
-                fmt::format("When resolving tier's parent it was "
+                fmt::format("{}: When resolving tier's parent it was "
                             "unknown tier id {}",
-                            id));
+                            filename, id));
             continue;
         }
 
         auto& tier = rec_template.tiers[tier_it->second];
-        if (tier.parent.has_value()) {
+        if (tier.parent.has_value() &&
+            (rec_template.tiers[tier.parent.value()].name !=
+             eaf_tier.parent_ref)) {
             my_log::Logger::warning(
                 "rec::rec_entry_t",
-                fmt::format("When resolving tier's parent tier {} has already "
-                            "parent {}",
-                            tier.name,
-                            rec_template.tiers[tier.parent.value()].name));
+                fmt::format(
+                    "{}: When resolving tier's parent tier {} has already "
+                    "parent {} not eq new {}",
+                    filename, tier.name,
+                    rec_template.tiers[tier.parent.value()].name,
+                    eaf_tier.parent_ref));
             continue;
         }
         auto parent_it = rec_template.tiers_map.find(eaf_tier.parent_ref);
         if (parent_it == rec_template.tiers_map.end()) {
             my_log::Logger::warning(
                 "rec::rec_entry_t",
-                fmt::format("When resolving tier's parent tier {} was "
+                fmt::format("{}: When resolving tier's parent tier {} was "
                             "unknown parent id {}",
-                            tier.name, eaf_tier.parent_ref));
+                            filename, tier.name, eaf_tier.parent_ref));
             continue;
         }
 

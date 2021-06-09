@@ -5,8 +5,11 @@
 
 namespace my_log {
 
-void Logger::debug(const std::string& system, const std::string& msg) {
+void Logger::debug([[maybe_unused]] const std::string& system,
+                   [[maybe_unused]] const std::string& msg) {
+#ifdef DEBUG
     inner_log(time(), "DEBUG", system, msg);
+#endif
 }
 void Logger::info(const std::string& system, const std::string& msg) {
     inner_log(time(), "INFO", system, msg);

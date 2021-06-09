@@ -27,10 +27,12 @@ struct time_slot_t {
 };
 
 struct annotation_t {
+    bool        is_ref{false};
     std::string id;
     std::string value;
     std::string ts1_ref;
     std::string ts2_ref;
+    std::string ref;
 };
 
 struct tier_t : public etf::tier_t {
@@ -53,6 +55,7 @@ struct eaf_t {
     std::map<std::string, linguistic_type_t> linguistic_types;
     std::map<std::string, constraint_t>      constraints;
     std::map<std::string, vocabulary_t>      vocabularies;
+    std::string                              filename;
 };
 
 }  // namespace rec::eaf

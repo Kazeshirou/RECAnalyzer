@@ -17,7 +17,12 @@ std::optional<eaf_t> Parser::parse_file(const std::string& filename) {
         Logger::critical("rec::eaf::Parser", result.description());
         return {};
     }
-    return parse(doc);
+    Logger::debug("rec::eaf::Parser", filename);
+    auto rv = parse(doc);
+    if (rv.has_value()) {
+        rv.value().filename = filename;
+    }
+    return rv;
 }
 
 std::optional<eaf_t> Parser::parse(const xml_document& doc) {
@@ -162,7 +167,7 @@ bool Parser::parse_tier(const ::pugi::xml_node& node, tier_t& tier) {
 
     auto annotation_nodes = node.children("ANNOTATION");
     if (annotation_nodes.begin() == annotation_nodes.end()) {
-        Logger::warning(
+        Logger::debug(
             "rec::eaf::Parser",
             fmt::format("Can't find ANNOTATION child tag of TIER {}", tier.id));
         return true;
@@ -184,21 +189,35 @@ bool Parser::parse_tier(const ::pugi::xml_node& node, tier_t& tier) {
 bool Parser::parse_annotation(const ::pugi::xml_node& node,
                               annotation_t&           annotation) {
     auto alignable_annotation_node = node.child("ALIGNABLE_ANNOTATION");
-    if (!alignable_annotation_node) {
-        Logger::warning(
-            "rec::eaf::Parser",
-            "Can't find ALIGNABLE_ANNOTATION child tag of ANNOTATION");
-        return false;
+    if (alignable_annotation_node) {
+        return parse_alignable_annotation(alignable_annotation_node,
+                                          annotation);
     }
 
+    auto ref_annotation_node = node.child("REF_ANNOTATION");
+    if (ref_annotation_node) {
+        return parse_ref_annotation(ref_annotation_node, annotation);
+    }
+
+    Logger::warning(
+        "rec::eaf::Parser",
+        "Can't find ALIGNABLE_ANNOTATION or REF_ANNOTATION of ANNOTATION");
+    return false;
+}
+
+
+bool Parser::parse_alignable_annotation(
+    const ::pugi::xml_node& alignable_annotation_node,
+    annotation_t&           annotation) {
     auto attr = alignable_annotation_node.attribute("ANNOTATION_ID");
     if (!attr) {
         Logger::warning(
             "rec::eaf::Parser",
             "Can't find ANNOTATION_ID attribute of ALIGNABLE_ANNOTATION");
-    } else {
-        annotation.id = attr.as_string();
+        return false;
     }
+    annotation.id = attr.as_string();
+
 
     attr = alignable_annotation_node.attribute("TIME_SLOT_REF1");
     if (!attr) {
@@ -222,6 +241,42 @@ bool Parser::parse_annotation(const ::pugi::xml_node& node,
 
     auto annotation_value_node =
         alignable_annotation_node.child("ANNOTATION_VALUE");
+    if (!annotation_value_node) {
+        Logger::warning("rec::eaf::Parser",
+                        fmt::format("Can't find ANNOTATION_VALUE child node of "
+                                    "ALIGNABLE_ANNOTATION {}",
+                                    annotation.id));
+        return false;
+    }
+    annotation.value = annotation_value_node.text().as_string();
+
+    return true;
+}
+
+
+bool Parser::parse_ref_annotation(const ::pugi::xml_node& node,
+                                  annotation_t&           annotation) {
+    auto attr = node.attribute("ANNOTATION_ID");
+    if (!attr) {
+        Logger::warning("rec::eaf::Parser",
+                        "Can't find ANNOTATION_ID attribute of REF_ANNOTATION");
+        return false;
+    }
+    annotation.id = attr.as_string();
+
+
+    attr = node.attribute("ANNOTATION_REF");
+    if (!attr) {
+        Logger::warning("rec::eaf::Parser",
+                        fmt::format("Can't find ANNOTATION_REF child node of "
+                                    "REF_ANNOTATION {}",
+                                    annotation.id));
+        return false;
+    }
+    annotation.is_ref = true;
+    annotation.ref    = attr.as_string();
+
+    auto annotation_value_node = node.child("ANNOTATION_VALUE");
     if (!annotation_value_node) {
         Logger::warning("rec::eaf::Parser",
                         fmt::format("Can't find ANNOTATION_VALUE child node of "
@@ -295,7 +350,8 @@ bool Parser::parse_vocabularies(
     std::map<std::string, vocabulary_t>& vocabularies) {
     auto vocabulary_nodes = node.children("CONTROLLED_VOCABULARY");
     if (vocabulary_nodes.begin() == vocabulary_nodes.end()) {
-        Logger::warning("rec::eaf::Parser", "Can't find CONSTRAINT tags");
+        Logger::debug("rec::eaf::Parser",
+                      "Can't find CONTROLLED_VOCABULARY tags");
         return false;
     }
 

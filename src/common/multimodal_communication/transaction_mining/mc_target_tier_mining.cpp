@@ -31,42 +31,34 @@ case_t Target_tier_mining::run(rec::rec_entry_t& rec_entry) const {
             t1 = t2;
             t2 = rec_entry.time_slots[target_event.ts1].value;
             if (t1 != t2) {
-                auto transaction = new transaction_t{t1, t2};
+                Bit_mask mask(rec_entry.rec_template.annotations.size());
                 for (const auto& event : rec_entry.annotations) {
-                    if (rec_entry.time_slots[event.ts1].value >=
-                        transaction->ts2) {
+                    if (rec_entry.time_slots[event.ts1].value >= t2) {
                         break;
                     }
-                    if (event_in_time_interval(rec_entry, event,
-                                               transaction->ts1,
-                                               transaction->ts2)) {
-                        transaction->set_bit(event.annotation_id);
+                    if (event_in_time_interval(rec_entry, event, t1, t2)) {
+                        mask.set_bit(event.annotation_id);
                     }
                 }
-                if (!transaction->ones()) {
-                    delete transaction;
-                } else {
-                    new_case.push_back(transaction);
+                if (mask.ones()) {
+                    new_case.push_back(new transaction_t{mask, t1, t2});
                 }
             }
         }
 
-        t1               = rec_entry.time_slots[target_event.ts1].value;
-        t2               = rec_entry.time_slots[target_event.ts2].value;
-        auto transaction = new transaction_t{t1, t2};
+        t1 = rec_entry.time_slots[target_event.ts1].value;
+        t2 = rec_entry.time_slots[target_event.ts2].value;
+        Bit_mask mask(rec_entry.rec_template.annotations.size());
         for (const auto& event : rec_entry.annotations) {
-            if (rec_entry.time_slots[event.ts1].value >= transaction->ts2) {
+            if (rec_entry.time_slots[event.ts1].value >= t2) {
                 break;
             }
-            if (event_in_time_interval(rec_entry, event, transaction->ts1,
-                                       transaction->ts2)) {
-                transaction->set_bit(event.annotation_id);
+            if (event_in_time_interval(rec_entry, event, t1, t2)) {
+                mask.set_bit(event.annotation_id);
             }
         }
-        if (!transaction->ones()) {
-            delete transaction;
-        } else {
-            new_case.push_back(transaction);
+        if (mask.ones()) {
+            new_case.push_back(new transaction_t{mask, t1, t2});
         }
     }
 
@@ -75,20 +67,17 @@ case_t Target_tier_mining::run(rec::rec_entry_t& rec_entry) const {
         t1 = t2;
         t2 = rec_entry.time_slots[rec_entry.time_slots.size() - 1].value;
         if (t1 != t2) {
-            auto transaction = new transaction_t{t1, t2};
+            Bit_mask mask(rec_entry.rec_template.annotations.size());
             for (const auto& event : rec_entry.annotations) {
-                if (rec_entry.time_slots[event.ts1].value >= transaction->ts2) {
+                if (rec_entry.time_slots[event.ts1].value >= t2) {
                     break;
                 }
-                if (event_in_time_interval(rec_entry, event, transaction->ts1,
-                                           transaction->ts2)) {
-                    transaction->set_bit(event.annotation_id);
+                if (event_in_time_interval(rec_entry, event, t1, t2)) {
+                    mask.set_bit(event.annotation_id);
                 }
             }
-            if (!transaction->ones()) {
-                delete transaction;
-            } else {
-                new_case.push_back(transaction);
+            if (mask.ones()) {
+                new_case.push_back(new transaction_t{mask, t1, t2});
             }
         }
     }

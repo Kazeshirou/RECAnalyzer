@@ -26,6 +26,11 @@ protected:
     static bool parse_tier(const ::pugi::xml_node& node, tier_t& tier);
     static bool parse_annotation(const ::pugi::xml_node& node,
                                  annotation_t&           annotation);
+    static bool parse_alignable_annotation(
+        const ::pugi::xml_node& alignable_annotation_node,
+        annotation_t&           annotation);
+    static bool parse_ref_annotation(const ::pugi::xml_node& node,
+                                     annotation_t&           annotation);
     static bool parse_linguistic_types(
         const ::pugi::xml_node&                   node,
         std::map<std::string, linguistic_type_t>& linguistic_types);
