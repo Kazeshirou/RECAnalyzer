@@ -719,9 +719,74 @@ bool Analyzer::process_rule(const nlohmann::json& rules_cfg) {
     return rv;
 }
 
-bool Analyzer::process_clustering(
-    [[maybe_unused]] const nlohmann::json& clustering_cfg) {
-    return true;
+bool Analyzer::process_clustering(const nlohmann::json& clustering_cfg) {
+    std::vector<fs::path> filenames = process_files(clustering_cfg);
+
+    if (!filenames.size()) {
+        my_log::Logger::warning("analyzer",
+                                "Не было найдено ни одного входного файла");
+        return false;
+    }
+
+    mc::case_t new_case;
+    for (const auto& filename : filenames) {
+        auto cur_case_opt = read_case(filename.string());
+        if (!cur_case_opt.has_value()) {
+            my_log::Logger::warning(
+                "analyzer",
+                fmt::format("Не удалось считать {}", filename.string()));
+            continue;
+        }
+        auto& cur_case = cur_case_opt.value();
+        my_log::Logger::info("analyzer",
+                             fmt::format("Из {} считано {} транзакций",
+                                         filename.string(), cur_case.size()));
+
+        if (cur_case.size()) {
+            new_case.insert(new_case.end(), cur_case.begin(), cur_case.end());
+        }
+        cur_case.clear();
+    }
+
+    my_log::Logger::info("analyzer", fmt::format("Всего считано {} транзакций",
+                                                 new_case.size()));
+
+
+    double r = 2.0;
+    if (clustering_cfg.contains("r")) {
+        r = clustering_cfg["r"].get<double>();
+    }
+
+    my_log::Logger::info("analyzer",
+                         fmt::format("Настройки кластеризации: r = {}", r));
+
+
+    auto ignore = process_ignore(clustering_cfg);
+
+    for (Bit_mask* tran : new_case) {
+        (*tran) &= ignore;
+    }
+
+    auto [size, clusters] = mc::clustering::algorithm::clope(new_case, r);
+
+    my_log::Logger::info(
+        "analyzer", fmt::format("Транзакции поделены на {} кластеров", size));
+
+    std::string ext = process_output_file_extension(clustering_cfg);
+
+    std::string output_filename = fmt::format(
+        "{}/{}_cluster.{}", analisys_folder_, my_log::Logger::time(), ext);
+    bool rv = true;
+    if (!write_case(clusters, output_filename)) {
+        rv = false;
+    } else {
+        my_log::Logger::info(
+            "analyzer",
+            fmt::format("Выделенные часто встречающиеся наборы записаны в {}",
+                        output_filename));
+    }
+
+    return rv;
 }
 
 FILE_EXTENSION Analyzer::file_extension(const std::string& filename) {

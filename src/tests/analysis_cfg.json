@@ -98,9 +98,7 @@
                 "тексе_цель_аннотация1"
             ],
             "files": [
-                "file1",
-                "file2",
-                "file3"
+                "bin/test_analysis/.*_set\\..*"
             ],
             "r": 2.0
         }

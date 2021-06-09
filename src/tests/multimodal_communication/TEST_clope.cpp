@@ -20,11 +20,11 @@ TEST(clope_tests, clope_test) {
 
     auto [clusters_count, distribution] = clope(test_case, 2.);
     ASSERT_EQ(clusters_count, 2);
-    ASSERT_EQ(distribution[0], 0);
-    ASSERT_EQ(distribution[1], 0);
-    ASSERT_EQ(distribution[2], 0);
-    ASSERT_EQ(distribution[3], 1);
-    ASSERT_EQ(distribution[4], 1);
+    ASSERT_EQ(static_cast<mc::cluster_t*>(distribution[0])->cluster, 0);
+    ASSERT_EQ(static_cast<mc::cluster_t*>(distribution[1])->cluster, 0);
+    ASSERT_EQ(static_cast<mc::cluster_t*>(distribution[2])->cluster, 0);
+    ASSERT_EQ(static_cast<mc::cluster_t*>(distribution[3])->cluster, 1);
+    ASSERT_EQ(static_cast<mc::cluster_t*>(distribution[4])->cluster, 1);
 }
 
 }  // namespace mc::clustering::algorithm::tests

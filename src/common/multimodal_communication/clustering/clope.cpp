@@ -79,8 +79,7 @@ static size_t choose_cluster(std::vector<cluster_t>& clusters,
 }
 
 
-std::pair<size_t, std::vector<size_t>> clope(const case_t& transactions,
-                                             double        r) {
+std::pair<size_t, case_t> clope(const case_t& transactions, double r) {
     if (r < 1.) {
         r = 2.;
     }
@@ -123,7 +122,13 @@ std::pair<size_t, std::vector<size_t>> clope(const case_t& transactions,
         i++;
     }
 
-    return std::make_pair(clusters.size(), transaction_clusters);
+    case_t new_case;
+    for (size_t i{0}; i < transactions.size(); i++) {
+        new_case.push_back(
+            new mc::cluster_t(*transactions[i], transaction_clusters[i]));
+    }
+
+    return std::make_pair<size_t, case_t>(clusters.size(), std::move(new_case));
 }
 
 }  // namespace mc::clustering::algorithm
