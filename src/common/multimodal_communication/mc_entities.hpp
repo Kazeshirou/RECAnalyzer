@@ -98,6 +98,19 @@ struct cluster_t : public entry_t {
 };
 
 struct case_t : public std::vector<entry_t*> {
+    case_t()              = default;
+    case_t(const case_t&) = delete;
+    case_t(case_t&& other) : std::vector<entry_t*>(other) {
+        other.clear();
+    }
+    case_t& operator=(const case_t&) = delete;
+
+    case_t& operator=(case_t&& other) {
+        std::vector<entry_t*>::operator=(other);
+        other.clear();
+        return *this;
+    }
+
     ~case_t() {
         for (auto& entry : *this) {
             delete entry;
