@@ -5,9 +5,8 @@ cxxopts::ParseResult args_parser(int argc, char* argv[]) {
         "RECAnalyzer", "Допустимые аргументы командной строки RECAnalyzer");
     auto add = options.add_options();
     add("h, help", "Информация об использовании аргументов командной строки");
-    add("etf", "Путь к файлу шаблона разметки корпуса REC",
+    add("cfg", "Путь к файлу конфигурации анализа",
         cxxopts::value<std::string>());
-    add("eaf", "Путь к файлу корпуса REC", cxxopts::value<std::string>());
     auto result_parse = options.parse(argc, argv);
 
     if (result_parse.count("help")) {
@@ -15,8 +14,8 @@ cxxopts::ParseResult args_parser(int argc, char* argv[]) {
         exit(0);
     }
 
-    if (!result_parse.count("etf")) {
-        std::cout << "Пропущен обязательный аргумент \"etf\"!" << std::endl;
+    if (!result_parse.count("cfg")) {
+        std::cout << "Пропущен обязательный аргумент \"cfg\"!" << std::endl;
         exit(1);
     }
 
