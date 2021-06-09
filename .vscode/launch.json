@@ -7,8 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/RECAnalyzer",
             "args": [
-                "--etf=../REC/rec-template.etf",
-                "--eaf=./corpus/20081223-furekl-a1.eaf"
+                "--cfg=${workspaceFolder}/../rec_analysis/cfg.json"
             ],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
