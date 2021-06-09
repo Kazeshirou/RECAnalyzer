@@ -43,7 +43,8 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
 
     auto& tran = *static_cast<mc::transaction_t*>(case_->at(index.column()));
     if (role == Qt::SizeHintRole) {
-        return QSize(tran.ts2 - tran.ts1, 1);
+        return QVariant();
+        // return QSize(tran.ts2 - tran.ts1, 1);
     }
 
     if ((role != Qt::DisplayRole) && (role != Qt::UserRole) &&

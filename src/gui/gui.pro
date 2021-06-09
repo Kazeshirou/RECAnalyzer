@@ -24,6 +24,7 @@ SOURCES += \
     ../common/rec/rec_template/files/rec_template_binary_file.cpp \
     ../common/rec/rec_template/files/rec_template_json_file.cpp \
     ../common/rec/rec_template/rec_template.cpp \
+    caselistview.cpp \
     casemodel.cpp \
     casewidget.cpp \
     casewindow.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     ../common/rec/rec_template/files/rec_template_binary_file.hpp \
     ../common/rec/rec_template/files/rec_template_json_file.hpp \
     ../common/rec/rec_template/rec_template.hpp \
+    caselistview.hpp \
     casemodel.hpp \
     casewidget.hpp \
     casewindow.hpp \

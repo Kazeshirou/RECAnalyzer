@@ -4,9 +4,12 @@
 #include <QWidget>
 
 class CaseModel;
+class CaseListView;
 class PixelDelegate;
 QT_BEGIN_NAMESPACE
 class QTableView;
+class QTransposeProxyModel;
+class QItemSelectionModel;
 QT_END_NAMESPACE
 
 namespace mc {
@@ -25,9 +28,12 @@ public slots:
     void setCase(mc::case_t* newCase);
 signals:
 private:
-    CaseModel*     model_;
-    PixelDelegate* delegate_;
-    QTableView*    view_;
+    CaseModel*            model_;
+    PixelDelegate*        delegate_;
+    QTransposeProxyModel* transposeProxy_;
+    QItemSelectionModel*  selectionModel_;
+    QTableView*           view_;
+    CaseListView*         secondView_;
 };
 
 #endif  // CASEWIDGET_HPP
