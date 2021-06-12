@@ -1,12 +1,14 @@
 #pragma once
 
+#include <QList>
 #include <QMainWindow>
-
-#include <rec_template.hpp>
+#include <analyzer.hpp>
 
 QT_BEGIN_NAMESPACE
 class QAction;
 QT_END_NAMESPACE
+
+class CaseWindow;
 
 
 class MainWindow : public QMainWindow {
@@ -17,13 +19,24 @@ public:
     ~MainWindow() {}
 
     void openEaf(const QString& fileName);
+    void openTemplate(const QString& fileName);
+    void openTransactions(const QString& fileName);
+    void openSets(const QString& fileName);
+    void openRules(const QString& fileName);
+    void openClustering(const QString& fileName);
 
 public slots:
     void chooseEaf();
+    void chooseTemplate();
+    void chooseTransactions();
+    void chooseSets();
+    void chooseRules();
+    void chooseClustering();
     void showAboutBox();
 
 private:
-    rec::rec_template_t recTemplate_;
-    QAction*            openAction;
-    QString             currentPath;
+    Analyzer           analyzer_;
+    QAction*           openAction;
+    QString            currentPath_;
+    QList<CaseWindow*> windows_;
 };

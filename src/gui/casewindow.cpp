@@ -14,14 +14,15 @@
 
 CaseWindow::CaseWindow(QString filename, rec::rec_entry_t* recEntry,
                        QWidget* parent)
-        : QMainWindow(parent), recEntry_{recEntry} {
+        : QMainWindow(parent) {
     QWidget* centralWidget = new QWidget(this);
     statusBar()->showMessage("", 1);
 
-    caseWidget_ = new CaseWidget(recEntry_->rec_template, this);
+    caseWidget_ = new CaseWidget(recEntry->rec_template, this);
     mc::transaction::algorithm::By_time_slots_mining alg;
     caseWidget_->setCase(new mc::case_t(alg.run(*recEntry)));
     caseWidget_->changePixelSize(zoom_);
+    delete recEntry;
 
     QMenu*   viewMenu = new QMenu(tr("&View"), this);
     QAction* zoomIn   = viewMenu->addAction(tr("Zoom +"));
@@ -43,8 +44,34 @@ CaseWindow::CaseWindow(QString filename, rec::rec_entry_t* recEntry,
     resize(640, 480);
 }
 
-CaseWindow::~CaseWindow() {
-    delete recEntry_;
+CaseWindow::CaseWindow(QString filename, rec::rec_template_t& recTemplate,
+                       mc::case_t* newCase, QWidget* parent)
+        : QMainWindow(parent) {
+    QWidget* centralWidget = new QWidget(this);
+    statusBar()->showMessage("", 1);
+
+    caseWidget_ = new CaseWidget(recTemplate, this);
+    caseWidget_->setCase(newCase);
+    caseWidget_->changePixelSize(zoom_);
+
+    QMenu*   viewMenu = new QMenu(tr("&View"), this);
+    QAction* zoomIn   = viewMenu->addAction(tr("Zoom +"));
+    zoomIn->setShortcuts(QKeySequence::ZoomIn);
+    QAction* zoomOut = viewMenu->addAction(tr("Zoom -"));
+    zoomOut->setShortcuts(QKeySequence::ZoomOut);
+
+    menuBar()->addMenu(viewMenu);
+
+    connect(zoomIn, &QAction::triggered, this, &CaseWindow::zoomIn);
+    connect(zoomOut, &QAction::triggered, this, &CaseWindow::zoomOut);
+
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(caseWidget_);
+    centralWidget->setLayout(mainLayout);
+
+    setCentralWidget(centralWidget);
+    setWindowTitle(filename);
+    resize(640, 480);
 }
 
 void CaseWindow::zoomIn() {

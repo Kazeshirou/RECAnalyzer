@@ -23,6 +23,14 @@ public:
         progress_update_handler_ = progress_update_handler;
     }
 
+    void set_template(const rec::rec_template_t& rec_template) {
+        rec_template_ = rec_template;
+    }
+
+    rec::rec_template_t& get_template() {
+        return rec_template_;
+    }
+
     bool process_rec_template(const nlohmann::json& rec_template_cfg);
     bool process_converts(const nlohmann::json& convert_cfg);
     bool process_transactions(const nlohmann::json& transactions_cfg);
