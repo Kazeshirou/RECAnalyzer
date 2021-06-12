@@ -3,6 +3,8 @@
 #include <QKeySequence>
 #include <QtWidgets>
 
+#include <thread>
+
 #include <eaf_parser.hpp>
 #include <rec_entry.hpp>
 
@@ -36,14 +38,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     openClusteringAction->setShortcut(
         QKeySequence(QKeyCombination(Qt::CTRL, Qt::Key_C)));
 
-
     QAction* quitAction = fileMenu->addAction(tr("E&xit"));
     quitAction->setShortcuts(QKeySequence::Quit);
+
+    QMenu* analysisMenu = new QMenu(tr("&Анализ"), this);
+    QAction* runAnalysis = analysisMenu->addAction(tr("&Начать анлиз..."));
+    runAnalysis->setShortcut(
+        QKeySequence(QKeyCombination(Qt::CTRL, Qt::Key_G)));
 
     QMenu*   helpMenu    = new QMenu(tr("&Help"), this);
     QAction* aboutAction = helpMenu->addAction(tr("&About"));
 
     menuBar()->addMenu(fileMenu);
+    menuBar()->addSeparator();
+    menuBar()->addMenu(analysisMenu);
     menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
 
@@ -59,6 +67,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(openClusteringAction, &QAction::triggered, this,
             &MainWindow::chooseClustering);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+    connect(runAnalysis, &QAction::triggered, this, &MainWindow::chooseCfg);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::showAboutBox);
 
     setWindowTitle(tr("RECAnalyzer"));
@@ -116,6 +125,15 @@ void MainWindow::chooseClustering() {
 
     if (!fileName.isEmpty()) {
         openClustering(fileName);
+    }
+}
+
+void MainWindow::chooseCfg() {
+    QString fileName = QFileDialog::getOpenFileName(
+        this, tr("Выберите файл конфигурации анализа"), currentPath_, "*.json");
+
+    if (!fileName.isEmpty()) {
+        runAnalysis(fileName);
     }
 }
 
@@ -235,6 +253,19 @@ void MainWindow::openClustering(const QString& fileName) {
         windows_.removeOne(ptr);
         delete ptr;
     });
+}
+
+void MainWindow::runAnalysis(const QString& filename) {
+    std::thread analysis([&]() {
+        if (!analyzer_.run(filename.toStdString())) {
+            QMessageBox::warning(this, tr("Анализ {}").arg(filename),
+                                 tr("Что-то пошло не так, смотри логи"));
+        } else {
+            QMessageBox::information(this, tr("Анализ {}").arg(filename),
+                                     tr("Анализ успешно завершён"));
+        }
+    });
+    analysis.detach();
 }
 
 

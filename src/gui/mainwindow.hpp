@@ -25,6 +25,8 @@ public:
     void openRules(const QString& fileName);
     void openClustering(const QString& fileName);
 
+    void runAnalysis(const QString& filename);
+
 public slots:
     void chooseEaf();
     void chooseTemplate();
@@ -32,6 +34,7 @@ public slots:
     void chooseSets();
     void chooseRules();
     void chooseClustering();
+    void chooseCfg();
     void showAboutBox();
 
 private:
