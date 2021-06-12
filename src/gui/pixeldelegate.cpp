@@ -28,7 +28,12 @@ void PixelDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
     if (option.state & QStyle::State_Selected) {
         painter->setBrush(option.palette.highlightedText());
     } else {
-        painter->setBrush(option.palette.text());
+        QBrush brush = option.palette.text();
+        brush.setColor(index.model()
+                           ->data(index, Qt::ForegroundRole)
+                           .value<QBrush>()
+                           .color());
+        painter->setBrush(brush);
     }
 
     int xMargin = 1;

@@ -1,41 +1,26 @@
 #include "casewidget.hpp"
 
 #include <QHBoxLayout>
-#include <QHeaderView>
-#include <QItemSelectionModel>
 #include <QSplitter>
-#include <QTableView>
 
-
-#include "caselistview.hpp"
 #include "casemodel.hpp"
+#include "casetableview.h"
 #include "pixeldelegate.hpp"
 
+CaseWidget::CaseWidget(rec::rec_template_t& recTemplate, QWidget* parent)
+        : QWidget(parent), settins_(recTemplate, this) {
+    model_ = new CaseModel(settins_, this);
 
-CaseWidget::CaseWidget(QWidget* parent) : QWidget(parent) {
-    model_ = new CaseModel(this);
-
-    view_ = new QTableView(this);
-    view_->setShowGrid(false);
-    view_->horizontalHeader()->setMinimumSectionSize(1);
-    view_->verticalHeader()->setMinimumSectionSize(1);
+    view_ = new CaseTableView(this);
     view_->setModel(model_);
-    view_->horizontalHeader()->show();
-    view_->verticalHeader()->show();
     delegate_ = new PixelDelegate(this);
     view_->setItemDelegate(delegate_);
 
-    secondView_ = new CaseListView(this);
-    secondView_->setModel(model_);
-
-    selectionModel_ = new QItemSelectionModel(model_);
-    view_->setSelectionModel(selectionModel_);
-    secondView_->setSelectionModel(selectionModel_);
-
+    connect(&settins_, &AnnotationsViewSettings::hiddenChanged, view_,
+            &CaseTableView::hiddenChange);
 
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
     QSplitter*   splitter   = new QSplitter(this);
-    splitter->addWidget(secondView_);
     splitter->addWidget(view_);
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(1, 1);
@@ -69,8 +54,5 @@ CaseWidget::~CaseWidget() {
     }
     if (view_) {
         delete view_;
-    }
-    if (secondView_) {
-        delete secondView_;
     }
 }

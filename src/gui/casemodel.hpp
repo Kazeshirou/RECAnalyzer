@@ -1,13 +1,16 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QVector>
 #include <mc_entities.hpp>
+
+#include "annotationsviewsettings.h"
 
 class CaseModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
-    CaseModel(QObject* parent = nullptr);
+    CaseModel(AnnotationsViewSettings& settings, QObject* parent = nullptr);
     ~CaseModel();
 
     void setCase(mc::case_t* current_case);
@@ -20,6 +23,11 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const override;
 
+protected slots:
+    void colorChange(size_t i, QBrush);
+
 private:
-    mc::case_t* case_{nullptr};
+    AnnotationsViewSettings& settings_;
+    mc::case_t*              case_{nullptr};
+    QVector<size_t>          annotationsCount_;
 };

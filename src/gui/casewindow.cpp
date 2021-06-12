@@ -18,7 +18,7 @@ CaseWindow::CaseWindow(QString filename, rec::rec_entry_t* recEntry,
     QWidget* centralWidget = new QWidget(this);
     statusBar()->showMessage("", 1);
 
-    caseWidget_ = new CaseWidget(this);
+    caseWidget_ = new CaseWidget(recEntry_->rec_template, this);
     mc::transaction::algorithm::By_time_slots_mining alg;
     caseWidget_->setCase(new mc::case_t(alg.run(*recEntry)));
     caseWidget_->changePixelSize(zoom_);

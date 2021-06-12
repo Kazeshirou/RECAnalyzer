@@ -2,7 +2,11 @@
 
 #include <QSize>
 
-CaseModel::CaseModel(QObject* parent) : QAbstractTableModel(parent) {}
+CaseModel::CaseModel(AnnotationsViewSettings& settings, QObject* parent)
+        : QAbstractTableModel(parent), settings_{settings} {
+    connect(&settings_, &AnnotationsViewSettings::colorChanged, this,
+            &CaseModel::colorChange);
+}
 
 CaseModel::~CaseModel() {
     if (case_) {
@@ -16,14 +20,27 @@ void CaseModel::setCase(mc::case_t* newCase) {
         delete case_;
     }
     case_ = newCase;
+    if (newCase) {
+        annotationsCount_ =
+            QVector<size_t>(settings_.recTemplate().annotations.size(), 0);
+        for (auto mask : *case_) {
+            for (size_t i{0}; i < annotationsCount_.size(); i++) {
+                if (mask->check_bit(i)) {
+                    annotationsCount_[i]++;
+                }
+            }
+        }
+    }
+
+    for (size_t i{0}; i < annotationsCount_.size(); i++) {
+        settings_.setHidden(i, !annotationsCount_[i]);
+    }
+
     endResetModel();
 }
 
 int CaseModel::rowCount(const QModelIndex&) const {
-    if (!case_) {
-        return 0;
-    }
-    return case_->at(0)->size();
+    return settings_.recTemplate().annotations.size();
 }
 
 int CaseModel::columnCount(const QModelIndex&) const {
@@ -48,7 +65,8 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
     }
 
     if ((role != Qt::DisplayRole) && (role != Qt::UserRole) &&
-        (role != Qt::StatusTipRole) && (role != Qt::ToolTipRole)) {
+        (role != Qt::StatusTipRole) && (role != Qt::ToolTipRole) &&
+        (role != Qt::ForegroundRole) && (role != Qt::CheckStateRole)) {
         return QVariant();
     }
 
@@ -56,8 +74,8 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
         return QVariant();
     }
 
-    auto& annotation = tran.rec_entry.rec_template.annotations[index.row()];
-    auto& tier       = tran.rec_entry.rec_template.tiers[annotation.tier];
+    auto& annotation = settings_.recTemplate().annotations[index.row()];
+    auto& tier       = settings_.recTemplate().tiers[annotation.tier];
     switch (role) {
         case Qt::DisplayRole:
             return annotation.value.c_str();
@@ -75,6 +93,10 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
                 .arg(annotation.value.c_str())
                 .arg(int(tran.ts1))
                 .arg(int(tran.ts2));
+        case Qt::ForegroundRole:
+            return settings_.color(index.row());
+        case Qt::CheckStateRole:
+            return !settings_.hidden(index.row());
         default:
             return QVariant();
     }
@@ -91,4 +113,11 @@ QVariant CaseModel::headerData(int i, Qt::Orientation orientation,
             };
     }
     return QVariant();
+}
+
+void CaseModel::colorChange(size_t i, QBrush) {
+    if (case_) {
+        emit dataChanged(createIndex(i, 0), createIndex(i, case_->size()),
+                         {Qt::ForegroundRole});
+    }
 }

@@ -10,12 +10,17 @@ CONFIG += c++17
 
 SOURCES += \
     ../../thirdparty/pugixml/pugixml.cpp \
+    ../common/analyzer.cpp \
     ../common/bit_mask.cpp \
     ../common/logger.cpp \
     ../common/multimodal_communication/assotiation_mining/apriori.cpp \
     ../common/multimodal_communication/clustering/clope.cpp \
+    ../common/multimodal_communication/files/mc_entities_binary_file.cpp \
+    ../common/multimodal_communication/files/mc_entities_json_file.cpp \
     ../common/multimodal_communication/mc_entities.cpp \
     ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.cpp \
+    ../common/multimodal_communication/transaction_mining/mc_target_tier_mining.cpp \
+    ../common/multimodal_communication/transaction_mining/mc_window_mining.cpp \
     ../common/rec/eaf/eaf_parser.cpp \
     ../common/rec/etf/etf_parser.cpp \
     ../common/rec/rec_entry/files/rec_entry_binary_file.cpp \
@@ -24,8 +29,9 @@ SOURCES += \
     ../common/rec/rec_template/files/rec_template_binary_file.cpp \
     ../common/rec/rec_template/files/rec_template_json_file.cpp \
     ../common/rec/rec_template/rec_template.cpp \
-    caselistview.cpp \
+    annotationsviewsettings.cpp \
     casemodel.cpp \
+    casetableview.cpp \
     casewidget.cpp \
     casewindow.cpp \
     main.cpp \
@@ -49,13 +55,18 @@ HEADERS += \
     ../../thirdparty/nlohmann/nlohmann.hpp \
     ../../thirdparty/pugixml/pugiconfig.hpp \
     ../../thirdparty/pugixml/pugixml.hpp \
+    ../common/analyzer.hpp \
     ../common/bit_mask.hpp \
     ../common/logger.hpp \
     ../common/multimodal_communication/assotiation_mining/apriori.hpp \
     ../common/multimodal_communication/clustering/clope.hpp \
+    ../common/multimodal_communication/files/mc_entities_binary_file.hpp \
+    ../common/multimodal_communication/files/mc_entities_json_file.hpp \
     ../common/multimodal_communication/mc_entities.hpp \
     ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.hpp \
+    ../common/multimodal_communication/transaction_mining/mc_target_tier_mining.hpp \
     ../common/multimodal_communication/transaction_mining/mc_transaction_mining_interface.hpp \
+    ../common/multimodal_communication/transaction_mining/mc_window_mining.hpp \
     ../common/rec/eaf/eaf_data.hpp \
     ../common/rec/eaf/eaf_parser.hpp \
     ../common/rec/etf/etf_data.hpp \
@@ -66,8 +77,9 @@ HEADERS += \
     ../common/rec/rec_template/files/rec_template_binary_file.hpp \
     ../common/rec/rec_template/files/rec_template_json_file.hpp \
     ../common/rec/rec_template/rec_template.hpp \
-    caselistview.hpp \
+    annotationsviewsettings.h \
     casemodel.hpp \
+    casetableview.h \
     casewidget.hpp \
     casewindow.hpp \
     mainwindow.hpp \
@@ -86,7 +98,8 @@ INCLUDEPATH += \
     "../common/multimodal_communication" \
     "../common/multimodal_communication/transaction_mining" \
     "../common/multimodal_communication/assotiation_mining" \
-    "../common/multimodal_communication/clustering"
+    "../common/multimodal_communication/clustering"\
+    "../common/multimodal_communication/files"
 
 DEFINES += \
     FMT_HEADER_ONLY
