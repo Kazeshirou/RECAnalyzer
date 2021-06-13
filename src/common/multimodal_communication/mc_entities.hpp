@@ -124,6 +124,8 @@ struct case_t : public std::vector<entry_t*> {
 
     case_t::iterator       find(const entry_t& value);
     case_t::const_iterator find(const entry_t& value) const;
+
+    std::vector<size_t> findAllOccurrences(const entry_t& value) const;
 };
 
 }  // namespace mc

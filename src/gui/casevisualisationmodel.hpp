@@ -14,7 +14,10 @@ public:
                            QObject*                 parent = nullptr);
     ~CaseVisualisationModel();
 
-    void setCase(mc::case_t* current_case);
+    void        setCase(mc::case_t* current_case);
+    mc::case_t* getCase() {
+        return case_;
+    }
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;

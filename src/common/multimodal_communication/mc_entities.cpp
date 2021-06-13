@@ -56,4 +56,14 @@ case_t::const_iterator case_t::find(const entry_t& value) const {
     return end();
 }
 
+std::vector<size_t> case_t::findAllOccurrences(const entry_t& value) const {
+    std::vector<size_t> rv;
+    for (size_t i{0}; i < size(); i++) {
+        if ((*at(i) & value) == value) {
+            rv.push_back(i);
+        }
+    }
+    return rv;
+}
+
 }  // namespace mc
