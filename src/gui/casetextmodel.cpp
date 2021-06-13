@@ -21,7 +21,7 @@ int CaseTextModel::columnCount(const QModelIndex& index) const {
         return 0;
     }
 
-    return 3;
+    return 4;
 }
 
 QVariant CaseTextModel::data(const QModelIndex& index, int role) const {
@@ -86,6 +86,16 @@ QVariant CaseTextModel::data(const QModelIndex& index, int role) const {
                     return entry.support;
                 case 2:
                     return entry.confidence;
+                case 3:
+                    return QString("\"%1:%2\"")
+                        .arg(settings_.recTemplate()
+                                 .tiers[settings_.recTemplate()
+                                            .annotations[entry.target]
+                                            .tier]
+                                 .name.c_str())
+                        .arg(settings_.recTemplate()
+                                 .annotations[entry.target]
+                                 .value.c_str());
                 default:
                     return QVariant();
             }

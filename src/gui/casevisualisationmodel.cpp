@@ -136,9 +136,12 @@ QVariant CaseVisualisationModel::headerData(int i, Qt::Orientation orientation,
                     } break;
                     case mc::ENTRY_TYPE::RULE: {
                         auto& rule = *static_cast<mc::rule_t*>(case_->at(i));
-                        rv         = QString("[support = %1,confidence = %2]:")
+                        rv = QString("[support = %1,confidence = %2\n%3]:")
                                  .arg(rule.support)
-                                 .arg(rule.confidence) +
+                                 .arg(rule.confidence)
+                                 .arg(headerData(rule.target, Qt::Vertical,
+                                                 Qt::StatusTipRole)
+                                          .toString()) +
                              rv;
                     } break;
                     case mc::ENTRY_TYPE::CLUSTER: {
