@@ -5,7 +5,7 @@
 
 #include <annotationsviewsettings.h>
 
-class CaseModel;
+class CaseVisualisationModel;
 class PixelDelegate;
 QT_BEGIN_NAMESPACE
 class QTransposeProxyModel;
@@ -36,7 +36,7 @@ public slots:
 signals:
 private:
     AnnotationsViewSettings settins_;
-    CaseModel*              model_;
+    CaseVisualisationModel*              model_;
     PixelDelegate*          delegate_;
     QTransposeProxyModel*   transposeProxy_;
     QItemSelectionModel*    selectionModel_;

@@ -30,8 +30,8 @@ SOURCES += \
     ../common/rec/rec_template/files/rec_template_json_file.cpp \
     ../common/rec/rec_template/rec_template.cpp \
     annotationsviewsettings.cpp \
-    casemodel.cpp \
     casetableview.cpp \
+    casevisualisationmodel.cpp \
     casewidget.cpp \
     casewindow.cpp \
     main.cpp \
@@ -78,8 +78,8 @@ HEADERS += \
     ../common/rec/rec_template/files/rec_template_json_file.hpp \
     ../common/rec/rec_template/rec_template.hpp \
     annotationsviewsettings.h \
-    casemodel.hpp \
     casetableview.h \
+    casevisualisationmodel.hpp \
     casewidget.hpp \
     casewindow.hpp \
     mainwindow.hpp \

@@ -1,20 +1,21 @@
-#include "casemodel.hpp"
+#include "casevisualisationmodel.hpp"
 
 #include <QSize>
 
-CaseModel::CaseModel(AnnotationsViewSettings& settings, QObject* parent)
+CaseVisualisationModel::CaseVisualisationModel(
+    AnnotationsViewSettings& settings, QObject* parent)
         : QAbstractTableModel(parent), settings_{settings} {
     connect(&settings_, &AnnotationsViewSettings::colorChanged, this,
-            &CaseModel::colorChange);
+            &CaseVisualisationModel::colorChange);
 }
 
-CaseModel::~CaseModel() {
+CaseVisualisationModel::~CaseVisualisationModel() {
     if (case_) {
         delete case_;
     }
 }
 
-void CaseModel::setCase(mc::case_t* newCase) {
+void CaseVisualisationModel::setCase(mc::case_t* newCase) {
     beginResetModel();
     if (case_) {
         delete case_;
@@ -39,18 +40,19 @@ void CaseModel::setCase(mc::case_t* newCase) {
     endResetModel();
 }
 
-int CaseModel::rowCount(const QModelIndex&) const {
+int CaseVisualisationModel::rowCount(const QModelIndex&) const {
     return settings_.recTemplate().annotations.size();
 }
 
-int CaseModel::columnCount(const QModelIndex&) const {
+int CaseVisualisationModel::columnCount(const QModelIndex&) const {
     if (!case_ || !case_->size()) {
         return 0;
     }
     return case_->size();
 }
 
-QVariant CaseModel::data(const QModelIndex& index, int role) const {
+QVariant CaseVisualisationModel::data(const QModelIndex& index,
+                                      int                role) const {
     if (!case_) {
         return QVariant();
     }
@@ -102,8 +104,8 @@ QVariant CaseModel::data(const QModelIndex& index, int role) const {
     }
 }
 
-QVariant CaseModel::headerData(int i, Qt::Orientation orientation,
-                               int role) const {
+QVariant CaseVisualisationModel::headerData(int i, Qt::Orientation orientation,
+                                            int role) const {
     switch (role) {
         case Qt::SizeHintRole:
             if (orientation == Qt::Orientation::Horizontal) {
@@ -115,7 +117,7 @@ QVariant CaseModel::headerData(int i, Qt::Orientation orientation,
     return QVariant();
 }
 
-void CaseModel::colorChange(size_t i, QBrush) {
+void CaseVisualisationModel::colorChange(size_t i, QBrush) {
     if (case_) {
         emit dataChanged(createIndex(i, 0), createIndex(i, case_->size()),
                          {Qt::ForegroundRole});

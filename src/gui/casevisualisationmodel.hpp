@@ -6,12 +6,13 @@
 
 #include "annotationsviewsettings.h"
 
-class CaseModel : public QAbstractTableModel {
+class CaseVisualisationModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
-    CaseModel(AnnotationsViewSettings& settings, QObject* parent = nullptr);
-    ~CaseModel();
+    CaseVisualisationModel(AnnotationsViewSettings& settings,
+                           QObject*                 parent = nullptr);
+    ~CaseVisualisationModel();
 
     void setCase(mc::case_t* current_case);
 

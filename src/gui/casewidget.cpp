@@ -1,15 +1,14 @@
 #include "casewidget.hpp"
-
 #include <QHBoxLayout>
 #include <QSplitter>
 
-#include "casemodel.hpp"
 #include "casetableview.h"
+#include "casevisualisationmodel.hpp"
 #include "pixeldelegate.hpp"
 
 CaseWidget::CaseWidget(rec::rec_template_t& recTemplate, QWidget* parent)
         : QWidget(parent), settins_(recTemplate, this) {
-    model_ = new CaseModel(settins_, this);
+    model_ = new CaseVisualisationModel(settins_, this);
 
     view_ = new CaseTableView(this);
     view_->setModel(model_);
