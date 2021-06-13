@@ -1,5 +1,4 @@
-#ifndef ANNOTATIONSVIEWSETTINGS_H
-#define ANNOTATIONSVIEWSETTINGS_H
+#pragma once
 
 #include <QBrush>
 #include <QObject>
@@ -61,5 +60,3 @@ private:
     QVector<QBrush>      colors_;
     QVector<QBrush>      colorPalette_;
 };
-
-#endif  // ANNOTATIONSVIEWSETTINGS_H

@@ -1,5 +1,4 @@
-#ifndef CASETABLEVIEW_H
-#define CASETABLEVIEW_H
+#pragma once
 
 #include <QTableView>
 
@@ -26,6 +25,8 @@ public slots:
     void selectColumn(int column);
     void selectRow(int row);
     void copy();
+    void selectFromList(const QItemSelection& selected,
+                        const QItemSelection& deselected);
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
@@ -35,5 +36,3 @@ protected:
     size_t              currentOccurrenceIndex_{0};
     mc::entry_t         currentMask_;
 };
-
-#endif  // CASETABLEVIEW_H

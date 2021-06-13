@@ -6,11 +6,10 @@
 
 #include "annotationsviewsettings.hpp"
 
-class CaseVisualisationModel : public QAbstractTableModel {
+class CaseTextModel : public QAbstractTableModel {
     Q_OBJECT
-
 public:
-    CaseVisualisationModel(AnnotationsViewSettings& settings,
+    explicit CaseTextModel(AnnotationsViewSettings& settings,
                            QObject*                 parent = nullptr);
 
     void        setCase(mc::case_t* current_case);
@@ -30,11 +29,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const override;
 
-protected slots:
-    void colorChange(size_t i, QBrush);
-
 private:
     AnnotationsViewSettings& settings_;
     mc::case_t*              case_{nullptr};
-    QVector<size_t>          annotationsCount_;
 };

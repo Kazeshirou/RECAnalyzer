@@ -1,4 +1,4 @@
-#include "annotationsviewsettings.h"
+#include "annotationsviewsettings.hpp"
 
 AnnotationsViewSettings::AnnotationsViewSettings(
     rec::rec_template_t& recTemplate, QObject* parent)

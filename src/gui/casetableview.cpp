@@ -1,10 +1,12 @@
-#include "casetableview.h"
+#include "casetableview.hpp"
 
 #include <QAction>
 #include <QClipboard>
 #include <QContextMenuEvent>
 #include <QGuiApplication>
 #include <QHeaderView>
+#include <QItemSelection>
+#include <QItemSelectionRange>
 #include <QMenu>
 #include <QStatusBar>
 
@@ -149,6 +151,31 @@ void CaseTableView::copy() {
             ->headerData(currentIndex().column(), Qt::Orientation::Horizontal,
                          Qt::StatusTipRole)
             .toString());
+}
+
+void CaseTableView::selectFromList(const QItemSelection& selected,
+                                   const QItemSelection& deselected) {
+    for (const auto& selection : selected) {
+        if (selection.right() != 0) {
+            continue;
+        }
+        selectionModel()->select(
+            {QItemSelectionRange(
+                model()->index(0, selection.top()),
+                model()->index(model()->rowCount() - 1, selection.bottom()))},
+            QItemSelectionModel::SelectionFlags::enum_type::Select);
+    }
+    for (const auto& selection : deselected) {
+        selectionModel()->select(
+            {QItemSelectionRange(
+                model()->index(0, selection.top()),
+                model()->index(model()->rowCount() - 1, selection.bottom()))},
+            QItemSelectionModel::SelectionFlags::enum_type::Deselect);
+    }
+    if (selected.size()) {
+        scrollTo(model()->index(selectionModel()->currentIndex().row(),
+                                selected[0].top()));
+    }
 }
 
 void CaseTableView::contextMenuEvent(QContextMenuEvent* event) {

@@ -9,19 +9,10 @@ CaseVisualisationModel::CaseVisualisationModel(
             &CaseVisualisationModel::colorChange);
 }
 
-CaseVisualisationModel::~CaseVisualisationModel() {
-    if (case_) {
-        delete case_;
-    }
-}
-
 void CaseVisualisationModel::setCase(mc::case_t* newCase) {
     beginResetModel();
-    if (case_) {
-        delete case_;
-    }
     case_ = newCase;
-    if (newCase) {
+    if (case_) {
         annotationsCount_ =
             QVector<size_t>(settings_.recTemplate().annotations.size(), 0);
         for (auto mask : *case_) {
