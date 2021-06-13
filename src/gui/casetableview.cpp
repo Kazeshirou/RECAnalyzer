@@ -1,7 +1,9 @@
 #include "casetableview.h"
 
 #include <QAction>
+#include <QClipboard>
 #include <QContextMenuEvent>
+#include <QGuiApplication>
 #include <QHeaderView>
 #include <QMenu>
 #include <QStatusBar>
@@ -43,6 +45,12 @@ CaseTableView::CaseTableView(QWidget* parent) : QTableView(parent) {
     addAction(toPrevAction);
     contextMenu_->addAction(toPrevAction);
 
+    QAction* copyAction =
+        new QAction("С&копировать текущий столбец (текст)", this);
+    copyAction->setShortcut(Qt::CTRL | Qt::Key_C);
+    addAction(copyAction);
+    contextMenu_->addAction(copyAction);
+
     connect(selectColumnAction, &QAction::triggered, this,
             &CaseTableView::selectAllColumn);
     connect(selectRowAction, &QAction::triggered, this,
@@ -50,6 +58,7 @@ CaseTableView::CaseTableView(QWidget* parent) : QTableView(parent) {
     connect(findAction, &QAction::triggered, this, &CaseTableView::find);
     connect(toNextAction, &QAction::triggered, this, &CaseTableView::next);
     connect(toPrevAction, &QAction::triggered, this, &CaseTableView::previous);
+    connect(copyAction, &QAction::triggered, this, &CaseTableView::copy);
 }
 
 void CaseTableView::hiddenChange(size_t i, bool value) {
@@ -127,16 +136,19 @@ void CaseTableView::previous() {
 }
 
 void CaseTableView::selectColumn(int column) {
-    setStatusTip(model()
-                     ->headerData(column, Qt::Horizontal, Qt::StatusTipRole)
-                     .toString());
     QTableView::selectColumn(column);
 }
 
 void CaseTableView::selectRow(int row) {
-    setStatusTip(
-        model()->headerData(row, Qt::Vertical, Qt::StatusTipRole).toString());
     QTableView::selectRow(row);
+}
+
+void CaseTableView::copy() {
+    QGuiApplication::clipboard()->setText(
+        model()
+            ->headerData(currentIndex().column(), Qt::Orientation::Horizontal,
+                         Qt::StatusTipRole)
+            .toString());
 }
 
 void CaseTableView::contextMenuEvent(QContextMenuEvent* event) {

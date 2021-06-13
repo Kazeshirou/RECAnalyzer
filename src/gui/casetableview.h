@@ -25,6 +25,7 @@ public slots:
     void previous();
     void selectColumn(int column);
     void selectRow(int row);
+    void copy();
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
