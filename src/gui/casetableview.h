@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <mc_entities.hpp>
+
 QT_BEGIN_NAMESPACE
 class QMenu;
 QT_END_NAMESPACE
@@ -21,6 +23,8 @@ public slots:
     void find();
     void next();
     void previous();
+    void selectColumn(int column);
+    void selectRow(int row);
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
@@ -28,6 +32,7 @@ protected:
     QMenu*              contextMenu_;
     std::vector<size_t> occurrences_;
     size_t              currentOccurrenceIndex_{0};
+    mc::entry_t         currentMask_;
 };
 
 #endif  // CASETABLEVIEW_H

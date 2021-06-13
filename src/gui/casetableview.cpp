@@ -4,6 +4,7 @@
 #include <QContextMenuEvent>
 #include <QHeaderView>
 #include <QMenu>
+#include <QStatusBar>
 
 #include "casevisualisationmodel.hpp"
 
@@ -13,6 +14,7 @@ CaseTableView::CaseTableView(QWidget* parent) : QTableView(parent) {
     verticalHeader()->setMinimumSectionSize(1);
     horizontalHeader()->show();
     verticalHeader()->show();
+    setMouseTracking(true);
 
     contextMenu_ = new QMenu(this);
 
@@ -75,6 +77,7 @@ void CaseTableView::find() {
         }
     }
 
+    currentMask_ = mask;
     if (!mask.ones()) {
         return;
     }
@@ -121,6 +124,19 @@ void CaseTableView::previous() {
     }
     clearSelection();
     selectColumn(occurrences_[currentOccurrenceIndex_]);
+}
+
+void CaseTableView::selectColumn(int column) {
+    setStatusTip(model()
+                     ->headerData(column, Qt::Horizontal, Qt::StatusTipRole)
+                     .toString());
+    QTableView::selectColumn(column);
+}
+
+void CaseTableView::selectRow(int row) {
+    setStatusTip(
+        model()->headerData(row, Qt::Vertical, Qt::StatusTipRole).toString());
+    QTableView::selectRow(row);
 }
 
 void CaseTableView::contextMenuEvent(QContextMenuEvent* event) {
