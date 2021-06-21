@@ -12,12 +12,14 @@
 #include "logger.hpp"
 #include "mc_by_time_slots_mining.hpp"
 #include "mc_entities_binary_file.hpp"
+#include "mc_entities_csv_file.hpp"
 #include "mc_entities_json_file.hpp"
 #include "mc_target_tier_mining.hpp"
 #include "mc_window_mining.hpp"
 #include "rec_entry_binary_file.hpp"
 #include "rec_entry_json_file.hpp"
 #include "rec_template_binary_file.hpp"
+#include "rec_template_csv_file.hpp"
 #include "rec_template_json_file.hpp"
 
 bool Analyzer::run(const std::string& cfg_filename) {
@@ -885,6 +887,16 @@ bool Analyzer::write_rec_template(const rec::rec_template_t& rec_template,
             }
 
             return true;
+        case FILE_EXTENSION::CSV:
+            if (!rec::files::csv::to_file(rec_template, filename)) {
+                my_log::Logger::warning(
+                    "analyzer",
+                    fmt::format("Не удалось записать шаблон разметки в csv {}",
+                                filename));
+                return false;
+            }
+
+            return true;
         default: {
             if (!rec::files::binary::to_file(rec_template, filename)) {
                 my_log::Logger::warning(
@@ -1032,6 +1044,17 @@ bool Analyzer::write_case(const mc::case_t&  clusters,
                     "analyzer",
                     fmt::format(
                         "Не удалось записать файл эксперимента в json {}",
+                        filename));
+                return false;
+            }
+
+            return true;
+        case FILE_EXTENSION::CSV:
+            if (!mc::files::csv::to_file(clusters, filename)) {
+                my_log::Logger::warning(
+                    "analyzer",
+                    fmt::format(
+                        "Не удалось записать файл эксперимента в csv {}",
                         filename));
                 return false;
             }

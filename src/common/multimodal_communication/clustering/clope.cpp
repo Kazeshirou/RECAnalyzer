@@ -128,6 +128,16 @@ std::pair<size_t, case_t> clope(const case_t& transactions, double r) {
             new mc::cluster_t(*transactions[i], transaction_clusters[i]));
     }
 
+    auto compare = [](mc::entry_t* first, mc::entry_t* second) {
+        if (!first || !second) {
+            return false;
+        }
+        return static_cast<mc::cluster_t*>(first)->cluster <=
+               static_cast<mc::cluster_t*>(second)->cluster;
+    };
+
+    std::sort(new_case.begin(), new_case.end(), compare);
+
     return std::make_pair<size_t, case_t>(clusters.size(), std::move(new_case));
 }
 
