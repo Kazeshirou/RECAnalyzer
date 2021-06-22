@@ -130,9 +130,10 @@ bool Analyzer::run(const std::string& cfg_filename) {
 }
 
 bool Analyzer::process_rec_template(const nlohmann::json& rec_template_cfg) {
+    std::string base;
     if (auto base_json = rec_template_cfg.find("base_rec_template");
         base_json != rec_template_cfg.end()) {
-        auto base             = base_json.value().get<std::string>();
+        base                  = base_json.value().get<std::string>();
         auto rec_template_opt = read_rec_template(base);
         if (rec_template_opt.has_value()) {
             rec_template_ = rec_template_opt.value();
@@ -180,15 +181,24 @@ bool Analyzer::process_rec_template(const nlohmann::json& rec_template_cfg) {
                                 rec_template_.tiers.size(),
                                 rec_template_.annotations.size()));
 
+
+    if (!filenames.size()) {
+        my_log::Logger::info("analyzer", "Шаблон разметки успешно загружен");
+        return true;
+    }
+
     std::string output_filename = fmt::format(
         "{}/{}_rec_template.{}", analisys_folder_, my_log::Logger::time(), ext);
+
+
     bool rv = true;
     if (!write_rec_template(rec_template_, output_filename)) {
         rv = false;
     } else {
         my_log::Logger::info(
             "analyzer",
-            fmt::format("Шаблон разметки записан в {}", output_filename));
+            fmt::format("Шаблон разметки успешно загружен и записан в {}",
+                        output_filename));
     }
 
     return rv;
