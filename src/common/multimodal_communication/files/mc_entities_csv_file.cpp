@@ -21,101 +21,43 @@ bool to_file(const case_t& cur_case, const std::string& filename) {
         return true;
     }
 
-    for (size_t i{0}; i < cur_case[0]->size(); i++) {
-        for (const auto entry : cur_case) {
+    for (const auto entry : cur_case) {
+        for (size_t i{0}; i < entry->size(); i++) {
             if (entry->check_bit(i)) {
                 file << "1 | ";
             } else {
                 file << "0 | ";
             }
         }
-        file << std::endl;
-    }
-    for (const auto entry : cur_case) {
-        switch (entry->get_type()) {
-            case mc::ENTRY_TYPE::TRANSACTION: {
-                file << " tran |";
-                break;
-            }
-            case mc::ENTRY_TYPE::SET: {
-                file << " set |";
-                break;
-            }
-            case mc::ENTRY_TYPE::RULE: {
-                file << " rule |";
-                break;
-            }
-            case mc::ENTRY_TYPE::CLUSTER: {
-                file << " cluster |";
-                break;
-            }
-            default:
-                file << " |";
-                break;
-        }
-    }
-    file << std::endl;
 
-    for (const auto entry : cur_case) {
         switch (entry->get_type()) {
             case mc::ENTRY_TYPE::TRANSACTION: {
                 auto tran = static_cast<mc::transaction_t*>(entry);
-                file << fmt::format(" {} |", tran->ts1);
+                file << fmt::format("tran | {} | {}\n", tran->ts1, tran->ts2);
                 break;
             }
             case mc::ENTRY_TYPE::SET: {
                 auto set = static_cast<mc::set_t*>(entry);
-                file << fmt::format(" {} |", set->support);
+                file << fmt::format("set | {}\n", set->support);
                 break;
             }
             case mc::ENTRY_TYPE::RULE: {
                 auto rule = static_cast<mc::rule_t*>(entry);
-                file << fmt::format(" {} |", rule->support);
+                file << fmt::format("rule | {} | {}\n", rule->support,
+                                    rule->confidence);
                 break;
             }
             case mc::ENTRY_TYPE::CLUSTER: {
                 auto cluster = static_cast<mc::cluster_t*>(entry);
-                file << fmt::format(" {} |", cluster->cluster);
+                file << fmt::format("cluster | {}\n", cluster->cluster);
                 break;
             }
             default:
-                file << " |";
-                break;
-        }
-    }
-    file << std::endl;
-    for (const auto entry : cur_case) {
-        switch (entry->get_type()) {
-            case mc::ENTRY_TYPE::TRANSACTION: {
-                auto tran = static_cast<mc::transaction_t*>(entry);
-                file << fmt::format(" {} |", tran->ts2);
-                break;
-            }
-            case mc::ENTRY_TYPE::RULE: {
-                auto rule = static_cast<mc::rule_t*>(entry);
-                file << fmt::format(" {} |", rule->confidence);
-                break;
-            }
-            default:
-                file << " |";
+                file << "\n";
                 break;
         }
     }
 
-    file << std::endl;
-    for (const auto entry : cur_case) {
-        switch (entry->get_type()) {
-            case mc::ENTRY_TYPE::RULE: {
-                auto rule = static_cast<mc::rule_t*>(entry);
-                file << fmt::format("{} |", rule->target);
-                break;
-            }
-            default:
-                file << " |";
-                break;
-        }
-    }
-    file << std::endl;
     return true;
 }
 

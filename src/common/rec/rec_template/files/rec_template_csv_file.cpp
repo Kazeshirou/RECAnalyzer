@@ -16,9 +16,10 @@ bool to_file(const rec_template_t& rec, const std::string& filename) {
     }
 
     for (size_t i{0}; i < rec.annotations.size(); i++) {
-        file << fmt::format("{}:{}\n ", rec.tiers[rec.annotations[i].tier].name,
+        file << fmt::format("{}:{} | ", rec.tiers[rec.annotations[i].tier].name,
                             rec.annotations[i].value);
     }
+    file << std::endl;
 
     return true;
 }
