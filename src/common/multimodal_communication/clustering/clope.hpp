@@ -13,6 +13,6 @@ struct cluster_t {
     std::vector<size_t> items_occurence;       // Occ
 };
 
-std::pair<size_t, case_t> clope(const case_t& transactions, double r = 2.);
+std::vector<case_t*> clope(const case_t& transactions, double r = 2.);
 
 }  // namespace mc::clustering::algorithm

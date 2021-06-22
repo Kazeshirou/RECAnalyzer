@@ -81,7 +81,7 @@ static size_t choose_cluster(std::vector<cluster_t>& clusters,
 }
 
 
-std::pair<size_t, case_t> clope(const case_t& transactions, double r) {
+std::vector<case_t*> clope(const case_t& transactions, double r) {
     if (r < 1.) {
         r = 2.;
     }
@@ -116,6 +116,8 @@ std::pair<size_t, case_t> clope(const case_t& transactions, double r) {
         }
     }
 
+    my_log::Logger::info("clope", "processing results");
+
     for (size_t i{0}; i < clusters.size();) {
         if (!clusters[i].transaction_count) {
             clusters.erase(clusters.begin() + i);
@@ -124,27 +126,21 @@ std::pair<size_t, case_t> clope(const case_t& transactions, double r) {
                     --j;
                 }
             }
+            continue;
         }
         i++;
     }
 
-    case_t new_case;
+    std::vector<case_t*> rv(clusters.size(), nullptr);
     for (size_t i{0}; i < transactions.size(); i++) {
-        new_case.push_back(
+        if (!rv[transaction_clusters[i]]) {
+            rv[transaction_clusters[i]] = new case_t;
+        }
+        rv[transaction_clusters[i]]->push_back(
             new mc::cluster_t(*transactions[i], transaction_clusters[i]));
     }
 
-    auto compare = [](mc::entry_t* first, mc::entry_t* second) {
-        if (!first || !second) {
-            return false;
-        }
-        return static_cast<mc::cluster_t*>(first)->cluster <=
-               static_cast<mc::cluster_t*>(second)->cluster;
-    };
-
-    std::sort(new_case.begin(), new_case.end(), compare);
-
-    return std::make_pair<size_t, case_t>(clusters.size(), std::move(new_case));
+    return rv;
 }
 
 }  // namespace mc::clustering::algorithm

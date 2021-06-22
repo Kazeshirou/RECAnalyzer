@@ -794,24 +794,29 @@ bool Analyzer::process_clustering(const nlohmann::json& clustering_cfg) {
         (*tran) &= ignore;
     }
 
-    auto [size, clusters] = mc::clustering::algorithm::clope(new_case, r);
+    auto clusters = mc::clustering::algorithm::clope(new_case, r);
 
     my_log::Logger::info(
-        "analyzer", fmt::format("Транзакции поделены на {} кластеров", size));
+        "analyzer",
+        fmt::format("Транзакции поделены на {} кластеров", clusters.size()));
 
     std::string ext = process_output_file_extension(clustering_cfg);
 
-    std::string output_filename = fmt::format(
-        "{}/{}_cluster.{}", analisys_folder_, my_log::Logger::time(), ext);
-    bool rv = true;
-    if (!write_case(clusters, output_filename)) {
-        rv = false;
-    } else {
-        my_log::Logger::info(
-            "analyzer",
-            fmt::format("Выделенные часто встречающиеся наборы записаны в {}",
-                        output_filename));
+    auto time = my_log::Logger::time();
+    bool rv   = true;
+
+    for (size_t i{0}; i < clusters.size(); i++) {
+        std::string output_filename = fmt::format(
+            "{}/{}_r{}_c{}_cluster.{}", analisys_folder_, time, r, i, ext);
+        if (!write_case(*clusters[i], output_filename)) {
+            rv &= false;
+            my_log::Logger::info(
+                "analyzer", fmt::format("Не удалось записать кластер {} в {}",
+                                        i, output_filename));
+        }
+        delete clusters[i];
     }
+
 
     return rv;
 }
