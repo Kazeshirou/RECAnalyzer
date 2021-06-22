@@ -372,7 +372,6 @@ bool Analyzer::process_convert(const nlohmann::json& convert_cfg) {
         my_log::Logger::warning("analyzer", "Не удалось считать поле from");
         return false;
     }
-    auto from = from_json.value().get<std::string>();
 
     auto to_json = convert_cfg.find("to");
     if (to_json == convert_cfg.end()) {
@@ -382,12 +381,14 @@ bool Analyzer::process_convert(const nlohmann::json& convert_cfg) {
     auto to = to_json.value().get<std::string>();
 
     if (file_type == "rec_template") {
-        auto opt = read_rec_template(from);
+        auto from = from_json.value().get<std::string>();
+        auto opt  = read_rec_template(from);
         if (!opt.has_value()) {
             return false;
         }
         return write_rec_template(opt.value(), to);
     } else if (file_type == "rec_entry") {
+        auto from     = from_json.value().get<std::string>();
         rec_template_ = rec::rec_template_t{};
         auto opt      = read_rec_entry(from);
         if (!opt.has_value()) {
@@ -395,11 +396,17 @@ bool Analyzer::process_convert(const nlohmann::json& convert_cfg) {
         }
         return write_rec_entry(opt.value(), to);
     } else if (file_type == "case") {
-        auto opt = read_case(from);
-        if (!opt.has_value()) {
-            return false;
+        auto files = process_files(*from_json);
+        bool rv    = false;
+        for (const auto& file : files) {
+            auto opt = read_case(file.string());
+            if (!opt.has_value()) {
+                return false;
+            }
+
+            rv = write_case(opt.value(), file.string() + "." + to);
         }
-        return write_case(opt.value(), to);
+        return rv;
     }
 
     my_log::Logger::warning("analyzer",
