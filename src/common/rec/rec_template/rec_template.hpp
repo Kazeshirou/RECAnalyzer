@@ -39,6 +39,10 @@ struct rec_template_t {
     rec_template_t& operator=(rec_template_t&&) = default;
     ~rec_template_t()                           = default;
 
+    bool reduce_by_tiers(std::vector<std::string> ignore_tiers);
+    bool reduce_by_annotations(std::vector<std::string> ignore_annotations);
+    bool reduce_by_annotation(const std::string& ignore_annotation);
+
     bool operator==(const rec_template_t& other) const;
     bool operator!=(const rec_template_t& other) const {
         return !(*this == other);

@@ -151,4 +151,73 @@ bool rec_template_t::operator==(const rec_template_t& other) const {
 }
 
 
+bool rec_template_t::reduce_by_tiers(std::vector<std::string> ignore_tiers) {
+    auto rv = false;
+    for (const auto& tier : ignore_tiers) {
+        std::vector<std::string> ignore_annotations;
+        if (!tiers_map.count(tier)) {
+            my_log::Logger::warning(
+                "rec::rec_template_t",
+                fmt::format("Попытка удалить из шаблона неизвестный слой {}",
+                            tier));
+            continue;
+        }
+
+        auto tier_id = tiers_map.at(tier);
+        tiers.erase(tiers.begin() + tier_id);
+        tiers_map.erase(tier);
+        for (auto& [first, second] : tiers_map) {
+            (void)first;
+            if (second > tier_id) {
+                --second;
+            }
+        }
+        for (const auto& annotation : annotations) {
+            if (annotation.tier == tier_id) {
+                ignore_annotations.push_back(
+                    fmt::format("{}_{}", tier, annotation.value));
+            }
+        }
+        rv |= reduce_by_annotations(ignore_annotations);
+        for (auto& annotation : annotations) {
+            if (annotation.tier > tier_id) {
+                --annotation.tier;
+            }
+        }
+    }
+    return rv;
+}
+
+bool rec_template_t::reduce_by_annotations(
+    std::vector<std::string> ignore_annotations) {
+    auto rv = false;
+    for (const auto& ignore : ignore_annotations) {
+        rv |= reduce_by_annotation(ignore);
+    }
+    return rv;
+}
+
+bool rec_template_t::reduce_by_annotation(
+    const std::string& ignore_annotation) {
+    if (!annotations_map.count(ignore_annotation)) {
+        my_log::Logger::warning(
+            "rec::rec_template_t",
+            fmt::format("Попытка удалить из шаблона неизвестную метку {}",
+                        ignore_annotation));
+        return false;
+    }
+
+    auto id = annotations_map.at(ignore_annotation);
+    annotations.erase(annotations.begin() + id);
+    annotations_map.erase(ignore_annotation);
+    for (auto& [first, second] : annotations_map) {
+        (void)first;
+        if (second > id) {
+            --second;
+        }
+    }
+    return true;
+}
+
+
 }  // namespace rec

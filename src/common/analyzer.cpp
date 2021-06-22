@@ -176,13 +176,16 @@ bool Analyzer::process_rec_template(const nlohmann::json& rec_template_cfg) {
                                     success, filenames.size()));
     }
 
+
+    bool reduced = process_reduce_template(rec_template_cfg);
+
     my_log::Logger::info(
         "analyzer", fmt::format("В шаблоне слоёв {} и уникальных аннотаций {}",
                                 rec_template_.tiers.size(),
                                 rec_template_.annotations.size()));
 
 
-    if (!filenames.size()) {
+    if (!filenames.size() && !reduced) {
         my_log::Logger::info("analyzer", "Шаблон разметки успешно загружен");
         return true;
     }
@@ -1358,6 +1361,29 @@ mc::entry_t Analyzer::process_ignore(const nlohmann::json& cfg) {
     }
 
     rv.invert();
+
+    return rv;
+}
+
+bool Analyzer::process_reduce_template(const nlohmann::json& cfg) {
+    bool rv = false;
+    if (auto ignore_tiers = cfg.find("ignore_tiers");
+        ignore_tiers != cfg.end()) {
+        std::vector<std::string> tiers;
+        for (const auto& tier_json : *ignore_tiers) {
+            tiers.push_back(tier_json.get<std::string>());
+        }
+        rv |= rec_template_.reduce_by_tiers(tiers);
+    }
+
+    if (auto ignore_annotations = cfg.find("ignore_annotations");
+        ignore_annotations != cfg.end()) {
+        std::vector<std::string> annotations;
+        for (const auto& ann_json : *ignore_annotations) {
+            annotations.push_back(ann_json.get<std::string>());
+        }
+        rv |= rec_template_.reduce_by_annotations(annotations);
+    }
 
     return rv;
 }

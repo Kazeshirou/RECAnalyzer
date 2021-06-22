@@ -77,6 +77,7 @@ protected:
         process_annotation_settings(const nlohmann::json& cfg);
 
     mc::entry_t process_ignore(const nlohmann::json& cfg);
+    bool        process_reduce_template(const nlohmann::json& cfg);
 
 private:
     std::optional<std::function<void(double)>> progress_update_handler_;
