@@ -78,6 +78,8 @@ protected:
 
     mc::entry_t process_ignore(const nlohmann::json& cfg);
     bool        process_reduce_template(const nlohmann::json& cfg);
+    bool        process_reduce_entry(rec::rec_entry_t&     entry,
+                                     const nlohmann::json& cfg);
 
 private:
     std::optional<std::function<void(double)>> progress_update_handler_;

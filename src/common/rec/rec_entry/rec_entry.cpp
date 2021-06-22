@@ -232,6 +232,12 @@ void rec_entry_t::add_annotation(size_t                   current_tier_i,
                     "{}: Ref annotation {} on tier {} parent tier {} not "
                     "eq tier of refered annotation {}",
                     filename,
+                    rec_template.annotations[annotation.annotation_id].value,
+                    rec_template
+                        .tiers[rec_template
+                                   .annotations[annotation.annotation_id]
+                                   .tier]
+                        .name,
                     rec_template.tiers[current_tier.parent.value()].name,
                     rec_template
                         .tiers[rec_template
@@ -286,6 +292,63 @@ void rec_entry_t::resolve_tier_parents(const eaf::eaf_t& eaf) {
 
         rec_template.tiers[tier_it->second].parent = parent_it->second;
     }
+}
+
+
+bool rec_entry_t::reduce_by_tiers(std::vector<std::string> ignore_tiers) {
+    auto rv = false;
+    for (const auto& tier : ignore_tiers) {
+        std::vector<std::string> ignore_annotations;
+        if (!rec_template.tiers_map.count(tier)) {
+            my_log::Logger::warning(
+                "rec::rec_template_t",
+                fmt::format("Попытка удалить из разметки события с "
+                            "неизвестного слоя {}",
+                            tier));
+            continue;
+        }
+
+        auto tier_id = rec_template.tiers_map.at(tier);
+        for (const auto& annotation : rec_template.annotations) {
+            if (annotation.tier == tier_id) {
+                ignore_annotations.push_back(
+                    fmt::format("{}_{}", tier, annotation.value));
+            }
+        }
+        rv |= reduce_by_annotations(ignore_annotations);
+    }
+    return rv;
+}
+
+
+bool rec_entry_t::reduce_by_annotations(
+    std::vector<std::string> ignore_annotations) {
+    bool rv = false;
+    for (const auto& annotation : ignore_annotations) {
+        rv |= reduce_by_annotation(annotation);
+    }
+    return rv;
+}
+
+
+bool rec_entry_t::reduce_by_annotation(const std::string& ignore_annotation) {
+    if (!rec_template.annotations_map.count(ignore_annotation)) {
+        my_log::Logger::warning(
+            "rec::rec_template_t",
+            fmt::format(
+                "Попытка удалить из разметки события с неизвестной меткой {}",
+                ignore_annotation));
+        return false;
+    }
+
+    size_t old_size = annotations.size();
+    size_t id       = rec_template.annotations_map.at(ignore_annotation);
+    for (auto it = annotations.begin(); it != annotations.end(); it++) {
+        if ((*it).annotation_id == id) {
+            annotations.erase(it--);
+        }
+    }
+    return old_size != annotations.size();
 }
 
 }  // namespace rec

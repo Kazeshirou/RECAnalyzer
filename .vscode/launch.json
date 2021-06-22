@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/RECAnalyzer",
             "args": [
-                "--cfg=${workspaceFolder}/../rec_analysis/reduce_template.json"
+                "--cfg=${workspaceFolder}/../rec_analysis/time_slots_without_text.json"
             ],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",

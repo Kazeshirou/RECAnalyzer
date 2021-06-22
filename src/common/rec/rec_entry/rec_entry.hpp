@@ -96,6 +96,11 @@ struct rec_entry_t {
         return false;
     };
 
+
+    bool reduce_by_tiers(std::vector<std::string> ignore_tiers);
+    bool reduce_by_annotations(std::vector<std::string> ignore_annotations);
+    bool reduce_by_annotation(const std::string& ignore_annotation);
+
     rec_template_t& rec_template;
     std::string     author;
     std::string     date;

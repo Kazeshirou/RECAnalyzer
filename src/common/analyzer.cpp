@@ -516,6 +516,7 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
 
     mc::case_t new_case;
     size_t     success{0};
+    auto       rec_template_copy = rec_template_;
     for (const auto& filename : filenames) {
         auto rec_entry_opt = read_rec_entry(filename.string());
         if (!rec_entry_opt.has_value()) {
@@ -525,7 +526,12 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
                             filename.string()));
             continue;
         }
-        auto current_case = alg->run(rec_entry_opt.value());
+        auto& rec_entry = rec_entry_opt.value();
+        process_reduce_entry(rec_entry, transactions_cfg);
+        auto rec_template_extended_copy = rec_template_;
+        rec_template_                   = rec_template_copy;
+        auto current_case               = alg->run(rec_entry_opt.value());
+        rec_template_                   = rec_template_extended_copy;
         if (!current_case.size()) {
             my_log::Logger::warning(
                 "analyzer",
@@ -541,6 +547,7 @@ bool Analyzer::process_transaction(const nlohmann::json& transactions_cfg,
                                     filename.string(), current_case.size()));
         current_case.clear();
     }
+    rec_template_ = rec_template_copy;
     my_log::Logger::info("analyzer", fmt::format("Всего выделено {} транзакций",
                                                  new_case.size()));
     my_log::Logger::info("analyzer",
@@ -1383,6 +1390,31 @@ bool Analyzer::process_reduce_template(const nlohmann::json& cfg) {
             annotations.push_back(ann_json.get<std::string>());
         }
         rv |= rec_template_.reduce_by_annotations(annotations);
+    }
+
+    return rv;
+}
+
+
+bool Analyzer::process_reduce_entry(rec::rec_entry_t&     entry,
+                                    const nlohmann::json& cfg) {
+    bool rv = false;
+    if (auto ignore_tiers = cfg.find("ignore_tiers");
+        ignore_tiers != cfg.end()) {
+        std::vector<std::string> tiers;
+        for (const auto& tier_json : *ignore_tiers) {
+            tiers.push_back(tier_json.get<std::string>());
+        }
+        rv |= entry.reduce_by_tiers(tiers);
+    }
+
+    if (auto ignore_annotations = cfg.find("ignore_annotations");
+        ignore_annotations != cfg.end()) {
+        std::vector<std::string> annotations;
+        for (const auto& ann_json : *ignore_annotations) {
+            annotations.push_back(ann_json.get<std::string>());
+        }
+        rv |= entry.reduce_by_annotations(annotations);
     }
 
     return rv;
