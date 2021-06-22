@@ -25,18 +25,27 @@ case_t apriori_sets(const apriori_settings_t& settings,
     case_t sets;
 
     for (auto& transaction : transactions) {
-        node_t* node = &hash;
+        std::vector<node_t*> nodes;
+        nodes.push_back(&hash);
         for (size_t i{0}; i < size; i++) {
             if (!transaction->check_bit(i)) {
                 continue;
             }
 
-            if (!node->children[i]) {
-                node->children[i] = new node_t(size);
-            }
+            size_t nodes_size = nodes.size();
+            for (size_t j{0}; j < nodes_size; j++) {
+                if (!nodes[j]->children[i]) {
+                    nodes[j]->children[i] = new node_t(size);
+                }
+                if (j && !hash.children[i]) {
+                    hash.children[i] = new node_t(size);
+                    ++(hash.children[i]->value);
+                    nodes.push_back(hash.children[i]);
+                }
 
-            node = node->children[i];
-            ++node->value;
+                ++(nodes[j]->children[i]->value);
+                nodes[j] = nodes[j]->children[i];
+            }
         }
     }
 
