@@ -16,6 +16,7 @@ SOURCES += \
     ../common/multimodal_communication/assotiation_mining/apriori.cpp \
     ../common/multimodal_communication/clustering/clope.cpp \
     ../common/multimodal_communication/files/mc_entities_binary_file.cpp \
+    ../common/multimodal_communication/files/mc_entities_csv_file.cpp \
     ../common/multimodal_communication/files/mc_entities_json_file.cpp \
     ../common/multimodal_communication/mc_entities.cpp \
     ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
     ../common/rec/rec_entry/files/rec_entry_json_file.cpp \
     ../common/rec/rec_entry/rec_entry.cpp \
     ../common/rec/rec_template/files/rec_template_binary_file.cpp \
+    ../common/rec/rec_template/files/rec_template_csv_file.cpp \
     ../common/rec/rec_template/files/rec_template_json_file.cpp \
     ../common/rec/rec_template/rec_template.cpp \
     annotationsviewsettings.cpp \
@@ -63,6 +65,7 @@ HEADERS += \
     ../common/multimodal_communication/assotiation_mining/apriori.hpp \
     ../common/multimodal_communication/clustering/clope.hpp \
     ../common/multimodal_communication/files/mc_entities_binary_file.hpp \
+    ../common/multimodal_communication/files/mc_entities_csv_file.hpp \
     ../common/multimodal_communication/files/mc_entities_json_file.hpp \
     ../common/multimodal_communication/mc_entities.hpp \
     ../common/multimodal_communication/transaction_mining/mc_by_time_slots_mining.hpp \
@@ -77,6 +80,7 @@ HEADERS += \
     ../common/rec/rec_entry/files/rec_entry_json_file.hpp \
     ../common/rec/rec_entry/rec_entry.hpp \
     ../common/rec/rec_template/files/rec_template_binary_file.hpp \
+    ../common/rec/rec_template/files/rec_template_csv_file.hpp \
     ../common/rec/rec_template/files/rec_template_json_file.hpp \
     ../common/rec/rec_template/rec_template.hpp \
     annotationsviewsettings.hpp \
