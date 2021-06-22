@@ -172,6 +172,18 @@ bool rec_template_t::reduce_by_tiers(std::vector<std::string> ignore_tiers) {
                 --second;
             }
         }
+        for (auto& tier : tiers) {
+            if (!tier.parent.has_value()) {
+                continue;
+            }
+            if (tier.parent.value() == tier_id) {
+                tier.parent.reset();
+                continue;
+            }
+            if (tier.parent.value() > tier_id) {
+                tier.parent.value()--;
+            }
+        }
         for (const auto& annotation : annotations) {
             if (annotation.tier == tier_id) {
                 ignore_annotations.push_back(
