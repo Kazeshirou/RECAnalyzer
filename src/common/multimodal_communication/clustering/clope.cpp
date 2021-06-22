@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "logger.hpp"
+
 namespace mc::clustering::algorithm {
 
 static double delta_add(cluster_t& cluster, const entry_t& transaction,
@@ -87,13 +89,17 @@ std::pair<size_t, case_t> clope(const case_t& transactions, double r) {
         2, cluster_t{0, 0, 0, std::vector<size_t>(transactions[0]->size(), 0)});
     std::vector<size_t> transaction_clusters(transactions.size());
 
+
+    my_log::Logger::info("clope", "iter 0");
     for (size_t i{0}; i < transactions.size(); i++) {
         size_t cluster_i        = choose_cluster(clusters, *transactions[i], r);
         transaction_clusters[i] = cluster_i;
         update_cluster(clusters[cluster_i], *transactions[i]);
     }
 
+    size_t iter{1};
     while (true) {
+        my_log::Logger::info("clope", fmt::format("iter {}", iter++));
         bool moved{false};
         for (size_t i{0}; i < transactions.size(); i++) {
             rm_transaction_from_cluster(clusters[transaction_clusters[i]],

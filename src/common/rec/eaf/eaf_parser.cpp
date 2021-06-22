@@ -153,7 +153,9 @@ bool Parser::parse_tiers(const ::pugi::xml_node&        node,
         if (!parse_tier(*it, tier)) {
             continue;
         }
-
+        if ((tier.id == "текст") || (tier.id == "текст2")) {
+            continue;
+        }
         tiers[tier.id] = tier;
     }
 
