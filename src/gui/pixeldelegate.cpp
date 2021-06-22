@@ -14,7 +14,7 @@ void PixelDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
     }
 
 
-    if (!index.model()->data(index, Qt::UserRole).toInt()) {
+    if (index.model()->data(index, Qt::UserRole).isNull()) {
         return;
     }
     const double width  = option.rect.width();
