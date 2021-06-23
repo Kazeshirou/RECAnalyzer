@@ -3,73 +3,66 @@
 #include <functional>
 #include <vector>
 
+#define MAX_DEEP 20
+
 namespace mc::assotiation_mining::algorithm {
 
 case_t apriori_sets(const apriori_settings_t& settings,
                     const case_t&             transactions) {
-    struct node_t {
-        node_t(size_t size) : children(size, nullptr) {}
-        ~node_t() {
-            for (auto child : children) {
-                if (child) {
-                    delete child;
-                }
-            }
-        }
-        size_t               value{0};
-        std::vector<node_t*> children;
-    };
     size_t size = transactions[0]->size();
-    node_t hash(size);
-    hash.value = transactions.size();
     case_t sets;
+    float  trans_size = transactions.size();
 
-    for (auto& transaction : transactions) {
-        std::vector<node_t*> nodes;
-        nodes.push_back(&hash);
-        for (size_t i{0}; i < size; i++) {
-            if (!transaction->check_bit(i)) {
+    float                 support = 0;
+    std::vector<Bit_mask> prev;
+    for (size_t i{0}; i < size; i++) {
+        Bit_mask mask{size};
+        mask.set_bit(i);
+        size_t value{0};
+        for (auto& transaction : transactions) {
+            if ((mask & *transaction) != mask) {
                 continue;
             }
 
-            size_t nodes_size = nodes.size();
-            for (size_t j{0}; j < nodes_size; j++) {
-                if (!nodes[j]->children[i]) {
-                    nodes[j]->children[i] = new node_t(size);
-                }
-                if (j && !hash.children[i]) {
-                    hash.children[i] = new node_t(size);
-                    ++(hash.children[i]->value);
-                    nodes.push_back(hash.children[i]);
-                }
-
-                ++(nodes[j]->children[i]->value);
-                nodes[j] = nodes[j]->children[i];
-            }
+            ++value;
         }
+        support = value / trans_size;
+        if (support < settings.min_support) {
+            continue;
+        }
+        sets.push_back(new set_t{mask, support});
+        prev.push_back(mask);
     }
 
-    std::function<void(const node_t&, Bit_mask)> add_to_sets =
-        [&](const node_t& current_node, Bit_mask current_mask) {
-            double support = current_node.value / double(transactions.size());
-            if (support < settings.min_support) {
-                return;
-            }
-            if (support <= settings.max_support) {
-                sets.push_back(new set_t{current_mask, support});
-            }
-            for (size_t i{0}; i < size; i++) {
-                if (!current_node.children[i]) {
+
+    size_t level = 2;
+    while (prev.size() && (level <= MAX_DEEP)) {
+        std::vector<Bit_mask> current;
+        for (size_t i{0}; i < prev.size() - 1; i++) {
+            for (size_t j{i + 1}; j < prev.size(); j++) {
+                auto mask = prev[i] | prev[j];
+                if (mask.ones() != level) {
                     continue;
                 }
+                size_t value{0};
+                for (auto& transaction : transactions) {
+                    if ((mask & *transaction) != mask) {
+                        continue;
+                    }
 
-                Bit_mask child_mask = current_mask;
-                child_mask.set_bit(i);
-                add_to_sets(*current_node.children[i], child_mask);
+                    ++value;
+                }
+                support = value / trans_size;
+                if (support < settings.min_support) {
+                    continue;
+                }
+                sets.push_back(new set_t{mask, support});
+                current.push_back(mask);
             }
-        };
-
-    add_to_sets(hash, Bit_mask(size));
+        }
+        prev = current;
+        ++level;
+    }
 
     return sets;
 }

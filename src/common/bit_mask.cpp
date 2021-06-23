@@ -46,9 +46,15 @@ bool Bit_mask::check_bit(size_t i) const {
 
 size_t Bit_mask::ones() const {
     size_t result{0};
-    for (size_t i{0}; i < size_; ++i) {
-        if (check_bit(i)) {
-            ++result;
+    for (size_t i{0}; i < data_.size(); ++i) {
+        if (!data_[i]) {
+            continue;
+        }
+        size_t base = i * one_element_size_c;
+        for (size_t j = 0; (j < one_element_size_c); j++) {
+            if (check_bit(base + j)) {
+                ++result;
+            }
         }
     }
     return result;
