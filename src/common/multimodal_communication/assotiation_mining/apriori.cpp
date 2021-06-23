@@ -44,6 +44,10 @@ case_t apriori_sets(const apriori_settings_t& settings,
                 if (mask.ones() != level) {
                     continue;
                 }
+                if (std::find(current.begin(), current.end(), mask) !=
+                    current.end()) {
+                    continue;
+                }
                 size_t value{0};
                 for (auto& transaction : transactions) {
                     if ((mask & *transaction) != mask) {
@@ -56,8 +60,9 @@ case_t apriori_sets(const apriori_settings_t& settings,
                 if (support < settings.min_support) {
                     continue;
                 }
-                sets.push_back(new set_t{mask, support});
+
                 current.push_back(mask);
+                sets.push_back(new set_t{mask, support});
             }
         }
         prev = current;
